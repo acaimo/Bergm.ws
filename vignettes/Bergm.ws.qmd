@@ -1,5 +1,5 @@
 ---
-title: "**Bergm.ws**: Bayesian multi-layer ERGMs for weighted and signed weighted networks"
+title: "**Bergm.ws**: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks"
 author: 
   - "Alberto Caimo"
   - "Isabella Gollini"
@@ -293,7 +293,6 @@ signed triangles and the spread of the positive degrees in every layer.
 #| fig-width: 7.5
 #| fig-height: 7.5
 y_rep <- ws_predictive(post, nsim = 200, seed = 2, verbose = FALSE)
-par(mfrow = c(1, 2))
 plot(y_rep, what = "model")
 plot(y_rep, what = "gof")
 ``` 
@@ -307,7 +306,7 @@ for positive triangles (labelled `gwesp+++`), usually with `scale = "gwesp"`
 so that its coefficient is comparable across layers.
 
 Finally, `ws_aux_check()` compares auxiliary networks of the length used by the
-sampler with networks from chains twenty times longer, at the posterior mean:
+sampler with networks from chains 20 times longer, at the posterior mean:
 
 ```{r}
 #| label: aux
@@ -477,7 +476,7 @@ $$
 \varphi \mid \Sigma \sim \mathcal{N}\big(1_K \otimes \mu_0,\;
 I_K \otimes \Sigma + J_K \otimes \Sigma_0\big),
 $$
-with $J_K$ the $K \times K$ matrix of $1$s. The exchange step uses this prior
+with $J_K$ the $K \times K$ matrix of $1$'s. The exchange step uses this prior
 (`collapse_mu = TRUE`); $\mu$ is then drawn from $\mathcal{N}(m_\mu, S_\mu)$ with
 $S_\mu = (\Sigma_0^{-1} + K\Sigma^{-1})^{-1}$ and
 $m_\mu = S_\mu(\Sigma_0^{-1}\mu_0 + K\Sigma^{-1}\bar\varphi)$, and $\Sigma$
@@ -539,16 +538,13 @@ knitr::kable(tab, row.names = FALSE)
 r <- setNames(agg$ESS_per_minute, agg$sampler)
 ```
 
-"Simulated" is the share of proposals that needed an auxiliary network, ESS the
-effective sample size over all chains of $\varphi$ and $\mu$, and the columns
-are averages over the two seeds. Delayed acceptance simulates a network for
+Delayed acceptance simulates a network for
 fewer than half of the proposals and raises the effective sample size per
 minute by a factor of `r sprintf("%.1f", r[2] / r[1])`; integrating out $\mu$
 adds a further factor of `r sprintf("%.1f", r[3] / r[2])`. Pooling the
 adaptation does not change the efficiency much, but it gives all chains the
-same kernel and, in these runs, the lowest $\hat R$. All $\hat R$ values are
-above 1.05 because the runs are deliberately short: they compare samplers, not
-final analyses.
+same kernel and, in these runs, the lowest $\hat R$ (these values are
+above 1.05 because the runs are deliberately short so as to compare samplers).
 
 ### Practical advice
 

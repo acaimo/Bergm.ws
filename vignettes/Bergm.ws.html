@@ -9,7 +9,7 @@
 <meta name="author" content="Alberto Caimo">
 <meta name="author" content="Isabella Gollini">
 
-<title>Bergm.ws: Bayesian multi-layer ERGMs for weighted and signed weighted networks</title>
+<title>Bergm.ws: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,7 +123,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><strong>Bergm.ws</strong>: Bayesian multi-layer ERGMs for weighted and signed weighted networks</h1>
+<h1 class="title"><strong>Bergm.ws</strong>: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks</h1>
 </div>
 
 
@@ -362,7 +362,7 @@ layer 3     32  40.14      1</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, signed weighted network
   adaptive exchange (joint update)
-  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 115 s
+  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 120 s
   acceptance after burn-in: 0.26, 0.26, 0.26 
   delayed acceptance: 45% of the proposals needed an auxiliary network
 
@@ -399,7 +399,7 @@ sd:edges- 0.343 0.088 0.221 0.327 0.559 1.000 2,182
 Convergence: max Rhat 1.017, min ESS 242, max |corr| between layers 0.42</code></pre>
 </div>
 </div>
-<p>The fit took 115 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
+<p>The fit took 120 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
 </section>
 <section id="results" class="level3">
 <h3 class="anchored" data-anchor-id="results">Results</h3>
@@ -449,8 +449,7 @@ layer 3   0.67  -0.59  -1.37</code></pre>
 <p>Posterior predictive networks are compared with the observed one on the model statistics and on statistics the model does not contain: the four kinds of signed triangles and the spread of the positive degrees in every layer.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>y_rep <span class="ot">&lt;-</span> <span class="fu">ws_predictive</span>(post, <span class="at">nsim =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">2</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_rep, <span class="at">what =</span> <span class="st">"model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_rep, <span class="at">what =</span> <span class="st">"model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -468,7 +467,7 @@ layer 3   0.67  -0.59  -1.37</code></pre>
 </div>
 </div>
 <p>The model describes how many positive and negative edges survive and how they are spread over the nodes, but contains no term for triangles, so statistics of triangle closure are where it is most likely to fail. A natural extension adds a shared-partner term to every layer, for instance <code>gwespL(0.5, fixed = TRUE, L.base = ~(z &amp; x_k), Ls.path = list(~(z &amp; x_k), ~(z &amp; x_k)))</code> for positive triangles (labelled <code>gwesp+++</code>), usually with <code>scale = "gwesp"</code> so that its coefficient is comparable across layers.</p>
-<p>Finally, <code>ws_aux_check()</code> compares auxiliary networks of the length used by the sampler with networks from chains twenty times longer, at the posterior mean:</p>
+<p>Finally, <code>ws_aux_check()</code> compares auxiliary networks of the length used by the sampler with networks from chains 20 times longer, at the posterior mean:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ws_aux_check</span>(post, <span class="at">seed =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -558,7 +557,7 @@ layer 3    33                18  12.72</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, unsigned weighted network
   adaptive exchange (joint update)
-  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 49 s
+  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 52 s
   acceptance after burn-in: 0.27, 0.26, 0.26, 0.27 
   delayed acceptance: 46% of the proposals needed an auxiliary network
   GWESP statistics rescaled by exp(-decay) 
@@ -645,7 +644,7 @@ Convergence: max Rhat 1.023, min ESS 203, max |corr| between layers 0.46</code><
 <p><strong>3. The hierarchical mean integrated out.</strong> When the layers move together, <span class="math inline">\(\varphi\)</span> and <span class="math inline">\(\mu\)</span> are strongly dependent and the plain Gibbs scheme is slow. Given <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu\)</span> is integrated out analytically, <span class="math display">\[
 \varphi \mid \Sigma \sim \mathcal{N}\big(1_K \otimes \mu_0,\;
 I_K \otimes \Sigma + J_K \otimes \Sigma_0\big),
-\]</span> with <span class="math inline">\(J_K\)</span> the <span class="math inline">\(K \times K\)</span> matrix of <span class="math inline">\(1\)</span>s. The exchange step uses this prior (<code>collapse_mu = TRUE</code>); <span class="math inline">\(\mu\)</span> is then drawn from <span class="math inline">\(\mathcal{N}(m_\mu, S_\mu)\)</span> with <span class="math inline">\(S_\mu = (\Sigma_0^{-1} + K\Sigma^{-1})^{-1}\)</span> and <span class="math inline">\(m_\mu = S_\mu(\Sigma_0^{-1}\mu_0 + K\Sigma^{-1}\bar\varphi)\)</span>, and <span class="math inline">\(\Sigma\)</span> from <span class="math inline">\(\mathrm{IW}(\nu_0 + K, S_0 + \sum_k (\varphi_k - \mu)(\varphi_k - \mu)^\top)\)</span>: a partially collapsed Gibbs sampler (van Dyk and Park, 2008).</p>
+\]</span> with <span class="math inline">\(J_K\)</span> the <span class="math inline">\(K \times K\)</span> matrix of <span class="math inline">\(1\)</span>’s. The exchange step uses this prior (<code>collapse_mu = TRUE</code>); <span class="math inline">\(\mu\)</span> is then drawn from <span class="math inline">\(\mathcal{N}(m_\mu, S_\mu)\)</span> with <span class="math inline">\(S_\mu = (\Sigma_0^{-1} + K\Sigma^{-1})^{-1}\)</span> and <span class="math inline">\(m_\mu = S_\mu(\Sigma_0^{-1}\mu_0 + K\Sigma^{-1}\bar\varphi)\)</span>, and <span class="math inline">\(\Sigma\)</span> from <span class="math inline">\(\mathrm{IW}(\nu_0 + K, S_0 + \sum_k (\varphi_k - \mu)(\varphi_k - \mu)^\top)\)</span>: a partially collapsed Gibbs sampler (van Dyk and Park, 2008).</p>
 <p><strong>4. Adaptation in three phases.</strong> During the burn-in the proposal covariance is re-estimated as <span class="math inline">\(0.95\,\widehat{\mathrm{Cov}} + 0.05\,B_0\)</span> from the second half of the chain’s history (Haario et al., 2001), and the scale is tuned towards an acceptance rate of 0.234. With several chains (<code>pool_adaptation = TRUE</code>), each chain adapts on its own during the first three quarters of the burn-in; the within-chain covariances are then averaged and given to every chain, which only tunes the scale during the last quarter; finally the scale is set to the geometric mean over the chains and the proposal is frozen. The retained draws of all chains come from the same Markov kernel. With <code>update = "layer"</code> the step is repeated for each layer in turn, with one auxiliary network per layer.</p>
 <section id="technical-improvements-over-the-basic-exchange-sampler" class="level3">
 <h3 class="anchored" data-anchor-id="technical-improvements-over-the-basic-exchange-sampler">Technical improvements over the basic exchange sampler</h3>
@@ -732,7 +731,7 @@ I_K \otimes \Sigma + J_K \otimes \Sigma_0\big),
 </table>
 </div>
 </div>
-<p>“Simulated” is the share of proposals that needed an auxiliary network, ESS the effective sample size over all chains of <span class="math inline">\(\varphi\)</span> and <span class="math inline">\(\mu\)</span>, and the columns are averages over the two seeds. Delayed acceptance simulates a network for fewer than half of the proposals and raises the effective sample size per minute by a factor of 1.6; integrating out <span class="math inline">\(\mu\)</span> adds a further factor of 1.6. Pooling the adaptation does not change the efficiency much, but it gives all chains the same kernel and, in these runs, the lowest <span class="math inline">\(\hat R\)</span>. All <span class="math inline">\(\hat R\)</span> values are above 1.05 because the runs are deliberately short: they compare samplers, not final analyses.</p>
+<p>Delayed acceptance simulates a network for fewer than half of the proposals and raises the effective sample size per minute by a factor of 1.6; integrating out <span class="math inline">\(\mu\)</span> adds a further factor of 1.6. Pooling the adaptation does not change the efficiency much, but it gives all chains the same kernel and, in these runs, the lowest <span class="math inline">\(\hat R\)</span> (these values are above 1.05 because the runs are deliberately short so as to compare samplers).</p>
 </section>
 <section id="practical-advice" class="level3">
 <h3 class="anchored" data-anchor-id="practical-advice">Practical advice</h3>
