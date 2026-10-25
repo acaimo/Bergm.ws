@@ -40,3 +40,4 @@ Author: Alberto Caimo [aut, cre] (<https://orcid.org/0000-0001-8956-7166>),
   Paolo Dalena [aut] (<https://orcid.org/0000-0003-2920-9572>),
   Isabella Gollini [aut] (<https://orcid.org/0000-0002-7738-5688>)
 Maintainer: Alberto Caimo <alberto.caimo@gmail.com>
+Config/roxygen2/version: 8.1.1

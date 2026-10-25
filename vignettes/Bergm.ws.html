@@ -152,12 +152,8 @@ window.Quarto = {
 <p>A weighted network with weights <span class="math inline">\(w_{ij}\)</span> is cut into nested binary layers by thresholds <span class="math inline">\(t_0 &lt; t_1 &lt; \dots &lt; t_K\)</span>: <span class="math display">\[
 x_k = \{ij : w_{ij} \ge t_k\}, \qquad x_0 \supseteq x_1 \supseteq \dots \supseteq x_K .
 \]</span></p>
-<p>Each transition <span class="math inline">\(x_{k-1} \to x_k\)</span> is modelled by an exponential random graph model whose statistics <span class="math inline">\(s(x_k)\)</span> are computed on layer <span class="math inline">\(k\)</span>, conditionally on the observed lower layers <span class="math inline">\(\tilde x_{k-1}\)</span>: <span class="math display">\[
-p(x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
-\exp\left\{\sum_{k=1}^K \varphi_k^\top s(x_k)\right\}
-\prod_{k=1}^K 1\{x_k \subseteq \tilde x_{k-1}\}.
-\]</span></p>
-<p>Layer <span class="math inline">\(k\)</span> can only keep edges of the observed layer below it, so <span class="math inline">\(\varphi_k\)</span> describes which edges survive the <span class="math inline">\(k\)</span>-th threshold: a dissolution process across the weight scale. When every edge of <span class="math inline">\(x_0\)</span> also carries a sign <span class="math inline">\(z_{ij}\)</span> (in gene co-expression networks, for instance, the sign of the correlation between two genes), the signs are modelled jointly with the layers, and the statistics <span class="math inline">\(s(z, x_k)\)</span> can distinguish positive and negative edges: <span class="math display">\[
+<p>Each transition <span class="math inline">\(x_{k-1} \to x_k\)</span> is modelled by an exponential random graph model whose statistics <span class="math inline">\(s(x_k)\)</span> are computed on layer <span class="math inline">\(k\)</span>, conditionally on the observed lower layers <span class="math inline">\(\tilde x_{k-1}\)</span>.</p>
+<p>Layer <span class="math inline">\(k\)</span> can only keep edges of the observed layer below it, so <span class="math inline">\(\varphi_k\)</span> describes which edges survive the <span class="math inline">\(k\)</span>-th threshold: a dissolution process across the weight scale. When <span class="math inline">\(x_0\)</span> also carries signs <span class="math inline">\(z\)</span> the signs are modelled jointly with the layers, and the statistics <span class="math inline">\(s(z, x_k)\)</span> can distinguish positive and negative edges: <span class="math display">\[
 p(z, x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
 \exp\left\{\sum_{k=1}^K \varphi_k^\top s(z, x_k)\right\}
 \prod_{k=1}^K 1\{x_k \subseteq \tilde x_{k-1}\}.
@@ -362,7 +358,7 @@ layer 3     32  40.14      1</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, signed weighted network
   adaptive exchange (joint update)
-  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 120 s
+  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 116 s
   acceptance after burn-in: 0.26, 0.26, 0.26 
   delayed acceptance: 45% of the proposals needed an auxiliary network
 
@@ -399,7 +395,7 @@ sd:edges- 0.343 0.088 0.221 0.327 0.559 1.000 2,182
 Convergence: max Rhat 1.017, min ESS 242, max |corr| between layers 0.42</code></pre>
 </div>
 </div>
-<p>The fit took 120 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
+<p>The fit took 116 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
 </section>
 <section id="results" class="level3">
 <h3 class="anchored" data-anchor-id="results">Results</h3>
@@ -557,7 +553,7 @@ layer 3    33                18  12.72</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, unsigned weighted network
   adaptive exchange (joint update)
-  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 52 s
+  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 49 s
   acceptance after burn-in: 0.27, 0.26, 0.26, 0.27 
   delayed acceptance: 46% of the proposals needed an auxiliary network
   GWESP statistics rescaled by exp(-decay) 

@@ -71,8 +71,10 @@ the multipliers \code{scale} and the change-statistic correlations
 \examples{
 data(toy_ws)
 dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
+
 f <- ~ L(~edges, ~(z & x_k)) + L(~edges, ~(!z & x_k)) +
   gwespL(0.5, fixed = TRUE, L.base = ~(z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k)))
+
 mod <- ws_model(dat, f, scale = "gwesp")
 mod
 

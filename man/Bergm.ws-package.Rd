@@ -57,12 +57,16 @@ The typical workflow is:
 \code{vignette("Bergm.ws", package = "Bergm.ws")}
 }
 \references{
-Caimo, A. and Gollini, I. (2020). A multi-layer exponential random graph
-modelling approach for weighted networks. \emph{Computational Statistics &
-Data Analysis}, 142, 106825.
+Caimo, A. and Friel, N. (2011). Bayesian inference for exponential random graph
+models. *Social Networks*, 33, 41–55.
 
-Caimo, A. and Friel, N. (2011). Bayesian inference for exponential random
-graph models. \emph{Social Networks}, 33, 41--55.
+Caimo, A. and Gollini, I. (2020). A multi-layer exponential random graph
+modelling approach for weighted networks. *Computational Statistics & Data
+Analysis*, 142, 106825.
+
+Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution 
+exponential-family models for weighted signed networks. 
+[arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420){.external target="_blank"}
 
 Murray, I., Ghahramani, Z. and MacKay, D. (2006). MCMC for doubly-intractable
 distributions. \emph{Proceedings of UAI}.

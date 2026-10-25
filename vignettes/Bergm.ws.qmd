@@ -35,18 +35,12 @@ $$
 
 Each transition $x_{k-1} \to x_k$ is modelled by an exponential random graph
 model whose statistics $s(x_k)$ are computed on layer $k$, conditionally on the
-observed lower layers $\tilde x_{k-1}$:
-$$
-p(x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
-\exp\left\{\sum_{k=1}^K \varphi_k^\top s(x_k)\right\}
-\prod_{k=1}^K 1\{x_k \subseteq \tilde x_{k-1}\}.
-$$
+observed lower layers $\tilde x_{k-1}$.
 
 Layer $k$ can only keep edges of the observed layer below it, so $\varphi_k$
 describes which edges survive the $k$-th threshold: a dissolution process
-across the weight scale. When every edge of $x_0$ also carries a sign $z_{ij}$
-(in gene co-expression networks, for instance, the sign of the correlation
-between two genes), the signs are modelled jointly with the layers, and the
+across the weight scale. When $x_0$ also carries signs $z$
+the signs are modelled jointly with the layers, and the
 statistics $s(z, x_k)$ can distinguish positive and negative edges:
 $$
 p(z, x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
@@ -77,7 +71,6 @@ The code below uses the names of the notation:
 | $\mu_0, \Sigma_0, \nu_0, S_0$ | hyperparameters | `mu0`, `Sigma0`, `nu0`, `S0` |
 | $\pi(\varphi, \mu, \Sigma \mid y)$ | posterior | `post`, `post_x` |
 | $\varphi_k$, $\mu$ | layer parameters, hierarchical mean | `phi`, `mu` |
-| $y'$ | auxiliary network of the exchange algorithm | (internal) |
 | $y^{\mathrm{rep}}$ | networks simulated from either prior or posterior predictive distribution | `y_prior`, `y_rep`, `x_rep` |
 
 ## 2. Simulated data
@@ -442,28 +435,25 @@ Two moment-matching Newton steps then move towards the posterior mode,
 
 $$
 \varphi \leftarrow \varphi + (I_\varphi + P)^{-1}
-\{s(y) - \mathrm{E}_\varphi s - P(\varphi - m)\},
+\left\{s(y) - \mathrm{E}_\varphi s - P(\varphi - m)\right\},
 $$
 
 where $\mathrm{E}_\varphi s$ and the Fisher information $I_\varphi$ are the mean
 and covariance of `n_info` networks simulated at $\varphi$, and $P$ and $m$ the
 prior precision and mean of $\varphi$. The initial proposal covariance is
 $B_0 = (I_\varphi + P)^{-1}$ and the initial scale $2.38/\sqrt{2d}$ for
-$d = Kp$ parameters: the usual random-walk scale, reduced by $\sqrt 2$ because
-the exchange step adds noise of about the same size as the log-likelihood
-ratio.
+$d = Kp$ parameters.
 
 **2. Delayed acceptance.** The score $g = s(y) - \mathrm{E}_c s$ and information
 $H = I_c$ at the starting value $c$ define a Gaussian surrogate of the
 log-likelihood,
 $\tilde\ell(\varphi) = g^\top(\varphi - c) - \tfrac12 (\varphi - c)^\top H (\varphi - c)$.
-Each proposal first passes a cheap test with the surrogate and the exact prior;
-only then is the auxiliary network simulated, and a second test corrects for
+Each proposal first passes a cheap step with the surrogate and the exact prior;
+only then is the auxiliary network simulated, and a second step corrects for
 the surrogate (Christen and Fox, 2005):
-
 $$
 \alpha_1 = \min\left\{1, \exp\{\tilde\ell(\varphi') - \tilde\ell(\varphi)\}
-\frac{p(\varphi')}{p(\varphi)}\right\}, \qquad
+\frac{\pi(\varphi')}{\pi(\varphi)}\right\}, \quad
 \alpha_2 = \min\left\{1, 
 \frac{\exp\left\{(\varphi' - \varphi)^\top \left[s(y) - s(y')\right]\right\}}
      {\exp\left\{\tilde\ell(\varphi') - \tilde\ell(\varphi)\right\}}\right\}.
@@ -485,7 +475,7 @@ a partially collapsed Gibbs sampler (van Dyk and Park, 2008).
 
 **4. Adaptation in three phases.** During the burn-in the proposal covariance
 is re-estimated as $0.95\,\widehat{\mathrm{Cov}} + 0.05\,B_0$ from the second
-half of the chain's history (Haario et al., 2001), and the scale is tuned
+half of the chain history (Haario et al., 2001), and the scale is tuned
 towards an acceptance rate of 0.234. With several chains
 (`pool_adaptation = TRUE`), each chain adapts on its own during the first three
 quarters of the burn-in; the within-chain covariances are then averaged and
@@ -574,7 +564,7 @@ modelling approach for weighted networks. *Computational Statistics & Data
 Analysis*, 142, 106825.
 
 Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution 
-exponential-family models for weighted signed networks. 
+exponential-family models for weighted signed networks. [arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420){.external target="_blank"}
 
 Christen, J. A. and Fox, C. (2005). Markov chain Monte Carlo using an
 approximation. *Journal of Computational and Graphical Statistics*, 14,

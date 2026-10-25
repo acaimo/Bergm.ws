@@ -143,21 +143,6 @@ acceptance indicators, final proposal scales and covariances), the settings and
 the initialisation (starting value, initial proposal covariance and a fit
 check of the starting value).
 }
-\references{
-Christen, J. A. and Fox, C. (2005). Markov chain Monte Carlo using an
-approximation. \emph{Journal of Computational and Graphical Statistics}, 14,
-795--810.
-
-Haario, H., Saksman, E. and Tamminen, J. (2001). An adaptive Metropolis
-algorithm. \emph{Bernoulli}, 7, 223--242.
-
-Murray, I., Ghahramani, Z. and MacKay, D. (2006). MCMC for doubly-intractable
-distributions. \emph{Proceedings of UAI}.
-
-van Dyk, D. A. and Park, T. (2008). Partially collapsed Gibbs samplers: theory
-and methods. \emph{Journal of the American Statistical Association}, 103,
-790--796.
-}
 \seealso{\code{\link{summary.bergm_w}}, \code{\link{plot.bergm_w}},
 \code{\link{ws_predictive}}, \code{\link{ws_aux_check}}}
 \examples{
