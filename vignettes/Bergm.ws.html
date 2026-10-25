@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.28">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Alberto Caimo">
+<meta name="author" content="Isabella Gollini">
+
+<title>Bergm.ws: Bayesian multi-layer ERGMs for weighted and signed weighted networks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Bergm.ws_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Bergm.ws_files/libs/quarto-html/quarto.js"></script>
+<script src="Bergm.ws_files/libs/quarto-html/popper.min.js"></script>
+<script src="Bergm.ws_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Bergm.ws_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Bergm.ws_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Bergm.ws_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Bergm.ws_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Bergm.ws_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Bergm.ws_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#multi-layer-dissolution-ergms" id="toc-multi-layer-dissolution-ergms" class="nav-link active" data-scroll-target="#multi-layer-dissolution-ergms">Multi-layer dissolution ERGMs</a></li>
+  <li><a href="#simulated-data" id="toc-simulated-data" class="nav-link" data-scroll-target="#simulated-data">2. Simulated data</a></li>
+  <li><a href="#weighted-signed-networks-bergm_ws" id="toc-weighted-signed-networks-bergm_ws" class="nav-link" data-scroll-target="#weighted-signed-networks-bergm_ws">3. Weighted signed networks: <code>bergm_ws()</code></a></li>
+  <li><a href="#weighted-networks-without-signs-bergm_w" id="toc-weighted-networks-without-signs-bergm_w" class="nav-link" data-scroll-target="#weighted-networks-without-signs-bergm_w">4. Weighted networks (without signs): <code>bergm_w()</code></a></li>
+  <li><a href="#the-adaptive-exchange-algorithm" id="toc-the-adaptive-exchange-algorithm" class="nav-link" data-scroll-target="#the-adaptive-exchange-algorithm">5. The adaptive exchange algorithm</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><strong>Bergm.ws</strong>: Bayesian multi-layer ERGMs for weighted and signed weighted networks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Alberto Caimo </p>
+             <p>Isabella Gollini </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="multi-layer-dissolution-ergms" class="level2">
+<h2 class="anchored" data-anchor-id="multi-layer-dissolution-ergms">Multi-layer dissolution ERGMs</h2>
+<p>A weighted network with weights <span class="math inline">\(w_{ij}\)</span> is cut into nested binary layers by thresholds <span class="math inline">\(t_0 &lt; t_1 &lt; \dots &lt; t_K\)</span>: <span class="math display">\[
+x_k = \{ij : w_{ij} \ge t_k\}, \qquad x_0 \supseteq x_1 \supseteq \dots \supseteq x_K .
+\]</span></p>
+<p>Each transition <span class="math inline">\(x_{k-1} \to x_k\)</span> is modelled by an exponential random graph model whose statistics <span class="math inline">\(s(x_k)\)</span> are computed on layer <span class="math inline">\(k\)</span>, conditionally on the observed lower layers <span class="math inline">\(\tilde x_{k-1}\)</span>: <span class="math display">\[
+p(x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
+\exp\left\{\sum_{k=1}^K \varphi_k^\top s(x_k)\right\}
+\prod_{k=1}^K 1\{x_k \subseteq \tilde x_{k-1}\}.
+\]</span></p>
+<p>Layer <span class="math inline">\(k\)</span> can only keep edges of the observed layer below it, so <span class="math inline">\(\varphi_k\)</span> describes which edges survive the <span class="math inline">\(k\)</span>-th threshold: a dissolution process across the weight scale. When every edge of <span class="math inline">\(x_0\)</span> also carries a sign <span class="math inline">\(z_{ij}\)</span> (in gene co-expression networks, for instance, the sign of the correlation between two genes), the signs are modelled jointly with the layers, and the statistics <span class="math inline">\(s(z, x_k)\)</span> can distinguish positive and negative edges: <span class="math display">\[
+p(z, x_{1:K} \mid \tilde x_{0:K-1}, \varphi_{1:K}) \propto
+\exp\left\{\sum_{k=1}^K \varphi_k^\top s(z, x_k)\right\}
+\prod_{k=1}^K 1\{x_k \subseteq \tilde x_{k-1}\}.
+\]</span></p>
+<p>In both cases the layer parameters are partially pooled by a hierarchical prior, <span class="math display">\[
+\varphi_k \mid \mu, \Sigma \sim \mathcal{N}(\mu, \Sigma), \quad
+\mu \sim \mathcal{N}(\mu_0, \Sigma_0), \quad \Sigma \sim \mathrm{IW}(\nu_0, S_0),
+\]</span> so that <span class="math inline">\(\mu\)</span> is the effect common to all layers and <span class="math inline">\(\Sigma\)</span> measures how much the layers differ. <code>bergm_w()</code> fits the model without signs and <code>bergm_ws()</code> the model with signs; both sample the posterior <span class="math inline">\(\pi(\varphi, \mu, \Sigma \mid y)\)</span> with the adaptive exchange algorithm of Section 5.</p>
+<p>The code below uses the names of the notation:</p>
+<table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>notation</th>
+<th>meaning</th>
+<th>code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(w_{ij}\)</span>, <span class="math inline">\(t_0, \dots, t_K\)</span>, <span class="math inline">\(z_{ij}\)</span></td>
+<td>weights, thresholds, signs</td>
+<td><code>w</code>, <code>t_k</code>, <code>z</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(y = (z, x_{0:K})\)</span></td>
+<td>observed signed network</td>
+<td><code>y</code></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(x = x_{0:K}\)</span></td>
+<td>observed network without signs</td>
+<td><code>x</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(s(z, x_k)\)</span>, <span class="math inline">\(s(x_k)\)</span></td>
+<td>statistics, as an <strong>ergm.multi</strong> formula</td>
+<td><code>s</code>, <code>s_x</code></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mu_0, \Sigma_0, \nu_0, S_0\)</span></td>
+<td>hyperparameters</td>
+<td><code>mu0</code>, <code>Sigma0</code>, <code>nu0</code>, <code>S0</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\pi(\varphi, \mu, \Sigma \mid y)\)</span></td>
+<td>posterior</td>
+<td><code>post</code>, <code>post_x</code></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\varphi_k\)</span>, <span class="math inline">\(\mu\)</span></td>
+<td>layer parameters, hierarchical mean</td>
+<td><code>phi</code>, <code>mu</code></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(y'\)</span></td>
+<td>auxiliary network of the exchange algorithm</td>
+<td>(internal)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(y^{\mathrm{rep}}\)</span></td>
+<td>networks simulated from either prior or posterior predictive distribution</td>
+<td><code>y_prior</code>, <code>y_rep</code>, <code>x_rep</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="simulated-data" class="level2">
+<h2 class="anchored" data-anchor-id="simulated-data">2. Simulated data</h2>
+<p><code>toy_ws</code> is a network on 40 nodes simulated with <code>ws_simulate(n = 40, seed = 33)</code>:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(toy_ws)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> toy_ws<span class="sc">$</span>weights</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>t_k <span class="ot">&lt;-</span> toy_ws<span class="sc">$</span>thresholds</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> toy_ws<span class="sc">$</span>signs</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ws_data</span>(w, t_k, z); y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Signed weighted network: 40 nodes, K = 3 layer transitions (x_0 -&gt; x_3)
+
+ layer threshold edges positive negative % positive triangles % +++
+   x_0    0.6995   234      180       54       76.9       717  61.1
+   x_1    0.8341   129      112       17       86.8       190  79.5
+   x_2    0.9164    65       61        4       93.8        41  82.9
+   x_3    0.9576    33       32        1       97.0         8  75.0</code></pre>
+</div>
+</div>
+<p>The share of positive edges grows with the weight, as it often does in real co-expression networks: strong interactions are mostly positive.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> <span class="fu">ws_layout</span>(y)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">layout =</span> xy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/network-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="880"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="weighted-signed-networks-bergm_ws" class="level2">
+<h2 class="anchored" data-anchor-id="weighted-signed-networks-bergm_ws">3. Weighted signed networks: <code>bergm_ws()</code></h2>
+<section id="model-specification" class="level3">
+<h3 class="anchored" data-anchor-id="model-specification">Model specification</h3>
+<p>The statistics are written as an <strong>ergm.multi</strong> formula. The layers are called <code>x_1</code>, <code>x_2</code>, <code>x_3</code> and the signs <code>z</code>, so <code>(z &amp; x_k)</code> selects the positive edges of layer <span class="math inline">\(k\)</span> and <code>(!z &amp; x_k)</code> its negative edges. Every layer has the same three statistics:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="er">~</span> <span class="co"># layer 1</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(z <span class="sc">&amp;</span> x_1)) <span class="sc">+</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span><span class="fu">gwdegree</span>(<span class="fl">0.5</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_1)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(<span class="sc">!</span>z <span class="sc">&amp;</span> x_1)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>       <span class="co"># layer 2</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(z <span class="sc">&amp;</span> x_2)) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span><span class="fu">gwdegree</span>(<span class="fl">0.5</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_2)) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(<span class="sc">!</span>z <span class="sc">&amp;</span> x_2)) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="co"># layer 3</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(z <span class="sc">&amp;</span> x_3)) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span><span class="fu">gwdegree</span>(<span class="fl">0.5</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_3)) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(<span class="sc">!</span>z <span class="sc">&amp;</span> x_3))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">ws_model</span>(y, s)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multi-layer dissolution ERGM for signed weighted networks
+  layers (transitions): 3   statistics per layer: 3 
+  formula:
+    L(~edges, ~(z &amp; x_1)) + L(~gwdegree(0.5, fixed = TRUE), ~(z &amp; x_1)) + L(~edges,
+      ~(!z &amp; x_1)) + L(~edges, ~(z &amp; x_2)) + L(~gwdegree(0.5, fixed = TRUE), ~(z &amp;
+      x_2)) + L(~edges, ~(!z &amp; x_2)) + L(~edges, ~(z &amp; x_3)) + L(~gwdegree(0.5, fixed =
+      TRUE), ~(z &amp; x_3)) + L(~edges, ~(!z &amp; x_3))
+
+Observed statistics :
+        edges+ gwdeg+ edges-
+layer 1    112  57.20     17
+layer 2     61  50.82      4
+layer 3     32  40.14      1</code></pre>
+</div>
+</div>
+<p>The same formula can be written once, as a template in which <code>x_k</code> stands for every layer: <code>~ L(~edges, ~(z &amp; x_k)) + L(~gwdegree(0.5, fixed = TRUE), ~(z &amp; x_k)) + L(~edges, ~(!z &amp; x_k))</code>.</p>
+<p><code>ws_model()</code> checks the formula before anything is fitted: every statistic must use exactly one layer, the statistics must be grouped by layer (all those of <code>x_1</code> first) and every layer must have the same number of statistics, because the hierarchical prior pools the <span class="math inline">\(j\)</span>-th statistic of all layers. A formula that breaks one of these rules is rejected with an explanation, and statistics that are zero in the data or whose change statistics are nearly collinear are reported.</p>
+<p>The two edge terms set the baseline log-odds that a positive or a negative edge of layer <span class="math inline">\(k-1\)</span> survives into layer <span class="math inline">\(k\)</span>. The geometrically weighted degree term describes how the surviving positive edges are spread over the nodes: a negative coefficient means that they concentrate on nodes that already have many positive edges, a positive one that they are spread evenly.</p>
+</section>
+<section id="prior-specification" class="level3">
+<h3 class="anchored" data-anchor-id="prior-specification">Prior specification</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">ws_prior</span>(model, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mu0 =</span> <span class="dv">0</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Sigma0 =</span> <span class="dv">3</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nu0 =</span> model<span class="sc">$</span>p <span class="sc">+</span> <span class="dv">9</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">S0 =</span> <span class="dv">1</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>prior</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hierarchical prior (p = 3 statistics per layer)
+  mu ~ N(mu0, Sigma0), Sigma ~ inverse-Wishart(nu0 = 12, S0)
+  prior mean of mu0: 0.00, 0.00, 0.00 
+  prior sd of mu: 1.73, 1.73, 1.73 
+  expected between-layer sd, sqrt(diag(E[Sigma])): 0.35, 0.35, 0.35 </code></pre>
+</div>
+</div>
+<p>These are the default values: <span class="math inline">\(\mu \sim \mathcal{N}(0, 3I)\)</span> and <span class="math inline">\(\Sigma \sim \mathrm{IW}(p + 9, I)\)</span>, so that the expected between-layer standard deviation is about 0.35. With few layers <span class="math inline">\(\Sigma\)</span> is informed mostly by the prior, which acts as a moderate shrinkage of the layers towards each other. A prior predictive check shows the networks the prior considers plausible:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>y_prior <span class="ot">&lt;-</span> <span class="fu">ws_predictive</span>(model, </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">prior =</span> prior, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">type =</span> <span class="st">"prior"</span>, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">nsim =</span> <span class="dv">100</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">seed =</span> <span class="dv">1</span>, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_prior)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/prior-pred-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="825"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Every observed statistic lies inside the central 95% of the prior predictive distribution: the prior is weakly informative on the scale of the data.</p>
+</section>
+<section id="posterior-inference" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-inference">Posterior inference</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">bergm_ws</span>(model, </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">prior =</span> prior, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_iter =</span> <span class="dv">15000</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">burnin =</span> <span class="dv">1500</span>, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_chains =</span> <span class="dv">3</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cores =</span> <span class="dv">2</span>, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">2026</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The same fit is obtained in one call with <code>bergm_ws(y, s, ...)</code>; building the model first lets us look at it and at the prior before fitting. The four chains start from dispersed points, adapt their proposal during the burn-in and then share the same frozen proposal.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>summary_post <span class="ot">&lt;-</span> <span class="fu">summary</span>(post)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>summary_post</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hierarchical multi-layer dissolution ERGM, signed weighted network
+  adaptive exchange (joint update)
+  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 115 s
+  acceptance after burn-in: 0.26, 0.26, 0.26 
+  delayed acceptance: 45% of the proposals needed an auxiliary network
+
+Hierarchical means
+            mean    sd   2.5%  50.0%  97.5%  Rhat   ESS
+mu:edges+  0.700 0.243  0.210  0.703  1.170 1.003 1,069
+mu:gwdeg+ -1.230 0.393 -1.993 -1.233 -0.442 1.004 1,003
+mu:edges- -1.217 0.329 -1.888 -1.208 -0.598 1.001   919
+
+Layer 1 (x_0 -&gt; x_1)
+            mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L1:edges+  0.759 0.139  0.492  0.758  1.037 1.017 460
+L1:gwdeg+ -1.982 0.536 -3.122 -1.952 -1.012 1.004 465
+L1:edges- -1.018 0.263 -1.587 -1.009 -0.540 1.001 590
+
+Layer 2 (x_1 -&gt; x_2)
+            mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L2:edges+  0.708 0.194  0.328  0.713  1.069 1.001 649
+L2:gwdeg+ -1.200 0.362 -1.880 -1.206 -0.455 1.005 612
+L2:edges- -1.300 0.338 -1.986 -1.301 -0.643 1.002 357
+
+Layer 3 (x_2 -&gt; x_3)
+            mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L3:edges+  0.666 0.337 -0.098  0.693  1.261 1.007 266
+L3:gwdeg+ -0.589 0.453 -1.365 -0.633  0.459 1.010 242
+L3:edges- -1.369 0.461 -2.364 -1.344 -0.539 1.002 511
+
+Between-layer standard deviations, sqrt(diag(Sigma))
+           mean    sd  2.5% 50.0% 97.5%  Rhat   ESS
+sd:edges+ 0.323 0.075 0.215 0.310 0.504 1.001 9,473
+sd:gwdeg+ 0.457 0.158 0.253 0.422 0.857 1.004   384
+sd:edges- 0.343 0.088 0.221 0.327 0.559 1.000 2,182
+
+Convergence: max Rhat 1.017, min ESS 242, max |corr| between layers 0.42</code></pre>
+</div>
+</div>
+<p>The fit took 115 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
+<p>The posterior means of <span class="math inline">\(\varphi_k\)</span> (one row per layer) and of <span class="math inline">\(\mu\)</span>:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>phi <span class="ot">&lt;-</span> <span class="fu">coef</span>(post)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">coef</span>(post, <span class="at">what =</span> <span class="st">"mu"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(phi, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        edges+ gwdeg+ edges-
+layer 1   0.76  -1.98  -1.02
+layer 2   0.71  -1.20  -1.30
+layer 3   0.67  -0.59  -1.37</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(mu, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>edges+ gwdeg+ edges- 
+  0.70  -1.23  -1.22 </code></pre>
+</div>
+</div>
+<p>The interval plot shows every effect in every layer next to the hierarchical mean:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(post, <span class="at">type =</span> <span class="st">"intervals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/intervals-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="880"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Positive edges are more likely than negative ones to survive into the next layer in every layer. The degree effect of the positive edges is negative (posterior means -1.98, -1.20 and -0.59 in layers 1 to 3): the positive edges that survive concentrate on nodes with many positive edges, which in this network are the cores of the modules. The effect weakens as the threshold rises, and the hierarchical prior pulls the three layers towards the common mean.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(post, <span class="at">max_points =</span> <span class="dv">500</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/traces-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1100"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The four chains overlap after the burn-in.</p>
+</section>
+<section id="posterior-predictive-checks" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-predictive-checks">Posterior predictive checks</h3>
+<p>Posterior predictive networks are compared with the observed one on the model statistics and on statistics the model does not contain: the four kinds of signed triangles and the spread of the positive degrees in every layer.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>y_rep <span class="ot">&lt;-</span> <span class="fu">ws_predictive</span>(post, <span class="at">nsim =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">2</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_rep, <span class="at">what =</span> <span class="st">"model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/post-pred-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="825"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_rep, <span class="at">what =</span> <span class="st">"gof"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/post-pred-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="825"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model describes how many positive and negative edges survive and how they are spread over the nodes, but contains no term for triangles, so statistics of triangle closure are where it is most likely to fail. A natural extension adds a shared-partner term to every layer, for instance <code>gwespL(0.5, fixed = TRUE, L.base = ~(z &amp; x_k), Ls.path = list(~(z &amp; x_k), ~(z &amp; x_k)))</code> for positive triangles (labelled <code>gwesp+++</code>), usually with <code>scale = "gwesp"</code> so that its coefficient is comparable across layers.</p>
+<p>Finally, <code>ws_aux_check()</code> compares auxiliary networks of the length used by the sampler with networks from chains twenty times longer, at the posterior mean:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ws_aux_check</span>(post, <span class="at">seed =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Auxiliary chains of 6620 steps vs 20 times longer, at the posterior mean
+(std_diff = difference of means in units of the long-chain sd; flagged if
+ |std_diff| &gt; 0.25 and |z| &gt; 2.77, Bonferroni over 9 statistics)
+
+ statistic mean_short mean_long sd_long std_diff      z
+ L1:edges+    113.290   113.660   9.154   -0.040 -0.286
+ L1:gwdeg+     61.940    62.049   2.265   -0.048 -0.361
+ L1:edges-     15.390    15.470   3.500   -0.023 -0.152
+ L2:edges+     62.270    61.220   7.567    0.139  1.039
+ L2:gwdeg+     50.994    50.452   3.709    0.146  1.076
+ L2:edges-      4.420     4.650   2.222   -0.104 -0.755
+ L3:edges+     32.070    32.280   4.660   -0.045 -0.329
+ L3:gwdeg+     37.267    37.584   3.605   -0.088 -0.632
+ L3:edges-      1.600     1.500   1.115    0.090  0.596
+
+No appreciable difference: the auxiliary chains are long enough.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="weighted-networks-without-signs-bergm_w" class="level2">
+<h2 class="anchored" data-anchor-id="weighted-networks-without-signs-bergm_w">4. Weighted networks (without signs): <code>bergm_w()</code></h2>
+<p>When edges have weights but no signs, <code>bergm_w()</code> fits the model of Section 1 without <span class="math inline">\(z\)</span> (Caimo and Gollini, 2020). The formula uses the layers <code>x_1</code>, …, <code>x_K</code>, or <code>x_k</code> in a template; any term can be applied to a layer with <code>L()</code>, for example <code>L(~edges, ~x_k)</code>, <code>L(~triangle, ~x_k)</code>, <code>L(~gwdegree(0.5, fixed = TRUE), ~x_k)</code> or <code>L(~nodematch("module"), ~x_k)</code>, and shared partners with <code>gwespL(0.5, fixed = TRUE, L.base = ~x_k, Ls.path = list(~x_k, ~x_k))</code>. Setting <span class="math inline">\(t_0\)</span> below the smallest weight makes <span class="math inline">\(x_0\)</span> the set of all observed edges.</p>
+<p>We use the weights of <code>toy_ws</code> and ignore the signs:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">ws_data</span>(w, t_k, <span class="at">attributes =</span> toy_ws<span class="sc">$</span>attributes)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unsigned weighted network: 40 nodes, K = 3 layer transitions (x_0 -&gt; x_3)
+Node attributes: module, pathway 
+
+ layer threshold edges triangles mean degree
+   x_0    0.6995   234       717       11.70
+   x_1    0.8341   129       190        6.45
+   x_2    0.9164    65        41        3.25
+   x_3    0.9576    33         8        1.65</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/network-x-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="880"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>s_x <span class="ot">&lt;-</span> <span class="er">~</span> <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>x_k) <span class="sc">+</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">L</span>(<span class="sc">~</span><span class="fu">nodematch</span>(<span class="st">"pathway"</span>), <span class="sc">~</span>x_k) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">gwespL</span>(<span class="fl">0.5</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>, <span class="at">L.base =</span> <span class="sc">~</span>x_k, <span class="at">Ls.path =</span> <span class="fu">list</span>(<span class="sc">~</span>x_k, <span class="sc">~</span>x_k))</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>model_x <span class="ot">&lt;-</span> <span class="fu">ws_model</span>(x, s_x, <span class="at">scale =</span> <span class="st">"gwesp"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>model_x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multi-layer dissolution ERGM for unsigned weighted networks
+  layers (transitions): 3   statistics per layer: 3 
+  formula (template, x_k = x_1, ..., x_K):
+    L(~edges, ~x_k) + L(~nodematch("pathway"), ~x_k) + gwespL(0.5, fixed = TRUE, L.base
+      = ~x_k, Ls.path = list(~x_k, ~x_k))
+  GWESP statistics rescaled by exp(-decay) 
+
+Observed statistics (rescaled) :
+        edges nodematch.pathway  gwesp
+layer 1   129                76 120.35
+layer 2    65                41  47.57
+layer 3    33                18  12.72</code></pre>
+</div>
+</div>
+<p><code>scale = "gwesp"</code> multiplies the GWESP statistic by <span class="math inline">\(e^{-\alpha}\)</span>, so that its coefficient is the change in log-odds for an edge with many shared partners in every layer. Here the model is fitted in one call, which builds the model and the default prior itself; given signed data, <code>bergm_w()</code> uses only the weights.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>post_x <span class="ot">&lt;-</span> <span class="fu">bergm_w</span>(x, </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                  s_x, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">scale =</span> <span class="st">"gwesp"</span>, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">n_iter =</span> <span class="dv">6000</span>, </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">burnin =</span> <span class="dv">1500</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">n_chains =</span> <span class="dv">4</span>, </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cores =</span> <span class="dv">2</span>, </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seed =</span> <span class="dv">7</span>, </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(post_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hierarchical multi-layer dissolution ERGM, unsigned weighted network
+  adaptive exchange (joint update)
+  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 49 s
+  acceptance after burn-in: 0.27, 0.26, 0.26, 0.27 
+  delayed acceptance: 46% of the proposals needed an auxiliary network
+  GWESP statistics rescaled by exp(-decay) 
+
+Hierarchical means
+                       mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+mu:edges             -1.456 0.348 -2.153 -1.451 -0.787 1.003 531
+mu:nodematch.pathway  0.055 0.275 -0.479  0.054  0.596 1.005 578
+mu:gwesp              1.370 0.306  0.772  1.368  1.987 1.009 566
+
+Layer 1 (x_0 -&gt; x_1)
+                       mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L1:edges             -1.819 0.423 -2.795 -1.788 -1.088 1.016 206
+L1:nodematch.pathway  0.054 0.217 -0.363  0.045  0.489 1.011 273
+L1:gwesp              1.634 0.344  1.044  1.613  2.435 1.023 230
+
+Layer 2 (x_1 -&gt; x_2)
+                       mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L2:edges             -1.570 0.325 -2.219 -1.565 -0.955 1.009 287
+L2:nodematch.pathway  0.134 0.273 -0.386  0.132  0.679 1.005 272
+L2:gwesp              1.357 0.287  0.793  1.346  1.954 1.012 265
+
+Layer 3 (x_2 -&gt; x_3)
+                       mean    sd   2.5%  50.0%  97.5%  Rhat ESS
+L3:edges             -1.061 0.353 -1.758 -1.061 -0.355 1.004 281
+L3:nodematch.pathway -0.015 0.340 -0.710 -0.008  0.651 1.014 203
+L3:gwesp              1.190 0.318  0.515  1.202  1.779 1.011 288
+
+Between-layer standard deviations, sqrt(diag(Sigma))
+                      mean    sd  2.5% 50.0% 97.5%  Rhat   ESS
+sd:edges             0.371 0.102 0.230 0.352 0.626 1.007   629
+sd:nodematch.pathway 0.327 0.077 0.216 0.314 0.513 1.002 5,541
+sd:gwesp             0.341 0.086 0.220 0.326 0.552 1.003 1,625
+
+Convergence: max Rhat 1.023, min ESS 203, max |corr| between layers 0.46</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(post_x, <span class="at">type =</span> <span class="st">"intervals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/intervals-x-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="880"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The transitivity effect is positive in every layer: an edge with many shared partners is more likely to have a large weight. Without signs, the statistics outside the model are the number of triangles and the standard deviation and maximum of the degrees in every layer.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>x_rep <span class="ot">&lt;-</span> <span class="fu">ws_predictive</span>(post_x, </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nsim =</span> <span class="dv">200</span>, </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">seed =</span> <span class="dv">8</span>, </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x_rep, <span class="at">what =</span> <span class="st">"gof"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Bergm.ws_files/figure-html/post-pred-x-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="825"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>All observed values lie inside the central 95% of the posterior predictive distribution. The two analyses of <code>toy_ws</code> answer different questions: this one asks how the weights alone are organised across the layers, the signed analysis of Section 3 also asks how the signs of the edges relate to their weights.</p>
+</section>
+<section id="the-adaptive-exchange-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="the-adaptive-exchange-algorithm">5. The adaptive exchange algorithm</h2>
+<p>The normalising constant <span class="math inline">\(c(\varphi)\)</span> of the multi-layer model on the observed supports is intractable, so the likelihood ratio of a Metropolis–Hastings step cannot be computed. The exchange algorithm (Murray et al., 2006; Caimo and Friel, 2011) simulates an auxiliary network <span class="math inline">\(y'\)</span> at the proposed value <span class="math inline">\(\varphi'\)</span>; with <span class="math inline">\(y'\)</span> in the acceptance ratio, <span class="math inline">\(c(\varphi)\)</span> and <span class="math inline">\(c(\varphi')\)</span> cancel and the likelihood ratio is replaced by <span class="math inline">\(\exp\{(\varphi' - \varphi)^\top (s(y) - s(y'))\}\)</span>. The auxiliary network is drawn by <code>aux_iters</code> steps of the <strong>ergm</strong> sampler started at the observed network (by default ten proposals per dyad-layer pair that can change, and at least 2,000); <code>ws_aux_check()</code> checks that this is long enough.</p>
+<p>The basic sampler alternates an exchange step for <span class="math inline">\(\varphi\)</span> with Gibbs draws of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\Sigma\)</span>. <strong>Bergm.ws</strong> improves it in four ways, none of which changes the posterior.</p>
+<p><strong>1. Starting values and proposal from the Fisher information.</strong> The chains start at the penalised maximum pseudo-likelihood estimate, the mode of the logistic pseudo-likelihood times the Gaussian prior of <span class="math inline">\(\varphi\)</span> (with <span class="math inline">\(\Sigma\)</span> at its prior mean), which is finite even when a statistic separates the dyads. Two moment-matching Newton steps then move towards the posterior mode,</p>
+<p><span class="math display">\[
+\varphi \leftarrow \varphi + (I_\varphi + P)^{-1}
+\{s(y) - \mathrm{E}_\varphi s - P(\varphi - m)\},
+\]</span></p>
+<p>where <span class="math inline">\(\mathrm{E}_\varphi s\)</span> and the Fisher information <span class="math inline">\(I_\varphi\)</span> are the mean and covariance of <code>n_info</code> networks simulated at <span class="math inline">\(\varphi\)</span>, and <span class="math inline">\(P\)</span> and <span class="math inline">\(m\)</span> the prior precision and mean of <span class="math inline">\(\varphi\)</span>. The initial proposal covariance is <span class="math inline">\(B_0 = (I_\varphi + P)^{-1}\)</span> and the initial scale <span class="math inline">\(2.38/\sqrt{2d}\)</span> for <span class="math inline">\(d = Kp\)</span> parameters: the usual random-walk scale, reduced by <span class="math inline">\(\sqrt 2\)</span> because the exchange step adds noise of about the same size as the log-likelihood ratio.</p>
+<p><strong>2. Delayed acceptance.</strong> The score <span class="math inline">\(g = s(y) - \mathrm{E}_c s\)</span> and information <span class="math inline">\(H = I_c\)</span> at the starting value <span class="math inline">\(c\)</span> define a Gaussian surrogate of the log-likelihood, <span class="math inline">\(\tilde\ell(\varphi) = g^\top(\varphi - c) - \tfrac12 (\varphi - c)^\top H (\varphi - c)\)</span>. Each proposal first passes a cheap test with the surrogate and the exact prior; only then is the auxiliary network simulated, and a second test corrects for the surrogate (Christen and Fox, 2005):</p>
+<p><span class="math display">\[
+\alpha_1 = \min\left\{1, \exp\{\tilde\ell(\varphi') - \tilde\ell(\varphi)\}
+\frac{p(\varphi')}{p(\varphi)}\right\}, \qquad
+\alpha_2 = \min\left\{1,
+\frac{\exp\left\{(\varphi' - \varphi)^\top \left[s(y) - s(y')\right]\right\}}
+     {\exp\left\{\tilde\ell(\varphi') - \tilde\ell(\varphi)\right\}}\right\}.
+\]</span></p>
+<p><strong>3. The hierarchical mean integrated out.</strong> When the layers move together, <span class="math inline">\(\varphi\)</span> and <span class="math inline">\(\mu\)</span> are strongly dependent and the plain Gibbs scheme is slow. Given <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\mu\)</span> is integrated out analytically, <span class="math display">\[
+\varphi \mid \Sigma \sim \mathcal{N}\big(1_K \otimes \mu_0,\;
+I_K \otimes \Sigma + J_K \otimes \Sigma_0\big),
+\]</span> with <span class="math inline">\(J_K\)</span> the <span class="math inline">\(K \times K\)</span> matrix of <span class="math inline">\(1\)</span>s. The exchange step uses this prior (<code>collapse_mu = TRUE</code>); <span class="math inline">\(\mu\)</span> is then drawn from <span class="math inline">\(\mathcal{N}(m_\mu, S_\mu)\)</span> with <span class="math inline">\(S_\mu = (\Sigma_0^{-1} + K\Sigma^{-1})^{-1}\)</span> and <span class="math inline">\(m_\mu = S_\mu(\Sigma_0^{-1}\mu_0 + K\Sigma^{-1}\bar\varphi)\)</span>, and <span class="math inline">\(\Sigma\)</span> from <span class="math inline">\(\mathrm{IW}(\nu_0 + K, S_0 + \sum_k (\varphi_k - \mu)(\varphi_k - \mu)^\top)\)</span>: a partially collapsed Gibbs sampler (van Dyk and Park, 2008).</p>
+<p><strong>4. Adaptation in three phases.</strong> During the burn-in the proposal covariance is re-estimated as <span class="math inline">\(0.95\,\widehat{\mathrm{Cov}} + 0.05\,B_0\)</span> from the second half of the chain’s history (Haario et al., 2001), and the scale is tuned towards an acceptance rate of 0.234. With several chains (<code>pool_adaptation = TRUE</code>), each chain adapts on its own during the first three quarters of the burn-in; the within-chain covariances are then averaged and given to every chain, which only tunes the scale during the last quarter; finally the scale is set to the geometric mean over the chains and the proposal is frozen. The retained draws of all chains come from the same Markov kernel. With <code>update = "layer"</code> the step is repeated for each layer in turn, with one auxiliary network per layer.</p>
+<section id="technical-improvements-over-the-basic-exchange-sampler" class="level3">
+<h3 class="anchored" data-anchor-id="technical-improvements-over-the-basic-exchange-sampler">Technical improvements over the basic exchange sampler</h3>
+<p>The comparison below fits a signed model of <code>toy_ws</code> with 15 parameters,</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="er">~</span> <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(z <span class="sc">&amp;</span> x_k)) <span class="sc">+</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span><span class="fu">nodematch</span>(<span class="st">"pathway"</span>), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_k)) <span class="sc">+</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">L</span>(<span class="sc">~</span>edges, <span class="sc">~</span>(<span class="sc">!</span>z <span class="sc">&amp;</span> x_k)) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>          <span class="fu">gwespL</span>(<span class="fl">0.5</span>, </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fixed =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">L.base =</span> <span class="sc">~</span>(z <span class="sc">&amp;</span> x_k), </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">Ls.path =</span> <span class="fu">list</span>(<span class="sc">~</span>(z <span class="sc">&amp;</span> x_k), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_k))) <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">gwespL</span>(<span class="fl">0.5</span>, </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fixed =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">L.base =</span> <span class="sc">~</span>(<span class="sc">!</span>z <span class="sc">&amp;</span> x_k), </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">Ls.path =</span> <span class="fu">list</span>(<span class="sc">~</span>(z <span class="sc">&amp;</span> x_k), <span class="sc">~</span>(z <span class="sc">&amp;</span> x_k)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>with <code>scale = "gwesp"</code>, 4 chains of 4,000 iterations (1,000 of burn-in) on 2 cores, adding the improvements one at a time, for two seeds. All four samplers share the starting values and initial proposal of improvement 1. These runs take about half an hour, so their results are stored with the package; the script that produced them is <code>system.file("scripts", "precompute_vignettes.R", package = "Bergm.ws")</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">sampler</th>
+<th style="text-align: right;">seconds</th>
+<th style="text-align: left;">simulated</th>
+<th style="text-align: right;">acceptance</th>
+<th style="text-align: right;">median ESS</th>
+<th style="text-align: right;">min ESS</th>
+<th style="text-align: right;">max Rhat</th>
+<th style="text-align: right;">ESS/min</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">basic</td>
+<td style="text-align: right;">268</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">1.47</td>
+<td style="text-align: right;">20.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">+ delayed acceptance</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: left;">39%</td>
+<td style="text-align: right;">0.26</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">1.49</td>
+<td style="text-align: right;">32.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">+ mu integrated out</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: left;">37%</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">1.40</td>
+<td style="text-align: right;">53.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">+ pooled adaptation</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: left;">41%</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">1.28</td>
+<td style="text-align: right;">45.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>“Simulated” is the share of proposals that needed an auxiliary network, ESS the effective sample size over all chains of <span class="math inline">\(\varphi\)</span> and <span class="math inline">\(\mu\)</span>, and the columns are averages over the two seeds. Delayed acceptance simulates a network for fewer than half of the proposals and raises the effective sample size per minute by a factor of 1.6; integrating out <span class="math inline">\(\mu\)</span> adds a further factor of 1.6. Pooling the adaptation does not change the efficiency much, but it gives all chains the same kernel and, in these runs, the lowest <span class="math inline">\(\hat R\)</span>. All <span class="math inline">\(\hat R\)</span> values are above 1.05 because the runs are deliberately short: they compare samplers, not final analyses.</p>
+</section>
+<section id="practical-advice" class="level3">
+<h3 class="anchored" data-anchor-id="practical-advice">Practical advice</h3>
+<ul>
+<li>Write the formula with the same terms in the same order in every layer (a template with <code>x_k</code> does this automatically), and look at the model before fitting: nearly collinear statistics are better dropped than fitted with longer chains.</li>
+<li>Use at least four chains and look at <span class="math inline">\(\hat R\)</span> and the effective sample sizes; with <code>cores &gt; 1</code> the chains run in parallel.</li>
+</ul>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>argument</th>
+<th>when/how to change it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>n_iter</code>, <code>burnin</code></td>
+<td>increase until <span class="math inline">\(\hat R &lt; 1.05\)</span> and the effective sample sizes exceed a few hundred</td>
+</tr>
+<tr class="even">
+<td><code>cores</code></td>
+<td>set to the number of chains if the machine allows</td>
+</tr>
+<tr class="odd">
+<td><code>aux_iters</code></td>
+<td>increase if <code>ws_aux_check()</code> finds differences</td>
+</tr>
+<tr class="even">
+<td><code>update</code></td>
+<td><code>"layer"</code> when the layer parameters are nearly uncorrelated a posteriori (see <code>summary(post)$corr</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>delayed</code></td>
+<td>do not switch it off!</td>
+</tr>
+<tr class="even">
+<td><code>dispersion</code></td>
+<td>larger values give a stricter convergence check</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Caimo, A. and Friel, N. (2011). Bayesian inference for exponential random graph models. <em>Social Networks</em>, 33, 41–55.</p>
+<p>Caimo, A. and Gollini, I. (2020). A multi-layer exponential random graph modelling approach for weighted networks. <em>Computational Statistics &amp; Data Analysis</em>, 142, 106825.</p>
+<p>Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution exponential-family models for weighted signed networks.</p>
+<p>Christen, J. A. and Fox, C. (2005). Markov chain Monte Carlo using an approximation. <em>Journal of Computational and Graphical Statistics</em>, 14, 795–810.</p>
+<p>Haario, H., Saksman, E. and Tamminen, J. (2001). An adaptive Metropolis algorithm. <em>Bernoulli</em>, 7, 223–242.</p>
+<p>Krivitsky, P. N., Koehly, L. M. and Marcum, C. S. (2020). Exponential-family random graph models for multi-layer networks. <em>Psychometrika</em>, 85, 630–659.</p>
+<p>Murray, I., Ghahramani, Z. and MacKay, D. (2006). MCMC for doubly-intractable distributions. <em>Proceedings of the 22nd Conference on Uncertainty in Artificial Intelligence</em>, 359–366.</p>
+<p>van Dyk, D. A. and Park, T. (2008). Partially collapsed Gibbs samplers: theory and methods. <em>Journal of the American Statistical Association</em>, 103, 790–796.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

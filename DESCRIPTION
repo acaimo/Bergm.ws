@@ -1,0 +1,42 @@
+Package: Bergm.ws
+Type: Package
+Title: Bayesian Multi-Layer ERGMs for Weighted and Signed Weighted
+        Networks
+Version: 0.1.0
+Authors@R: c(
+    person("Alberto", "Caimo", email = "alberto.caimo@gmail.com",
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8956-7166")),
+    person("Paolo", "Dalena", role = "aut",
+           comment = c(ORCID = "0000-0003-2920-9572")),
+    person("Isabella", "Gollini", role = "aut",
+           comment = c(ORCID = "0000-0002-7738-5688")))
+Description: Bayesian hierarchical multi-layer dissolution exponential random
+    graph models for weighted and signed weighted networks. A weighted network
+    is decomposed into nested binary layers by thresholding its edge weights,
+    and each transition between consecutive layers is modelled conditionally on
+    the observed lower layers: on the layers alone with bergm_w(), or jointly
+    with the edge signs with bergm_ws(). Layer-specific parameters are
+    partially pooled through a Normal-inverse-Wishart hierarchical prior and
+    estimated with an adaptive approximate exchange algorithm: joint or
+    layer-wise updates, delayed acceptance with a Gaussian approximation of the
+    likelihood, the hierarchical mean integrated out of the exchange step, and
+    a proposal covariance initialised from the Fisher information, learned
+    during the burn-in and pooled across chains. The package also provides a
+    model builder that checks that every statistic is computed on its own
+    layer, prior and posterior predictive checks with goodness-of-fit
+    statistics not used in the model, convergence diagnostics, a check of the
+    length of the auxiliary chains, and network visualisations.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.1.0)
+Imports: ergm (>= 4.6.0), ergm.multi (>= 0.2.0), network, coda, stats,
+        graphics, grDevices, utils, parallel
+Suggests: knitr, quarto
+VignetteBuilder: quarto
+NeedsCompilation: no
+Packaged: 2026-10-25 17:10:04 UTC; root
+Author: Alberto Caimo [aut, cre] (<https://orcid.org/0000-0001-8956-7166>),
+  Paolo Dalena [aut] (<https://orcid.org/0000-0003-2920-9572>),
+  Isabella Gollini [aut] (<https://orcid.org/0000-0002-7738-5688>)
+Maintainer: Alberto Caimo <alberto.caimo@gmail.com>
