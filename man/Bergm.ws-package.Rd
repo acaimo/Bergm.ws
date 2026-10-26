@@ -36,8 +36,6 @@ The typical workflow is:
   \item \code{\link{ws_data}}: build the layers from a weight matrix, a sign
     matrix and the thresholds (\code{\link{ws_simulate}} creates a toy
     example; \code{\link{toy_ws}} is one).
-  \item \code{\link{plot.ws_data}}, \code{\link{plot_layers}},
-    \code{\link{plot_adjacency}}: look at the network.
   \item \code{\link{ws_model}}: write the model as an \pkg{ergm.multi}
     formula on the layers \code{x_1}, \dots, \code{x_K} and the signs
     \code{z}, or once as a template with \code{x_k}. The formula is checked:
@@ -46,8 +44,8 @@ The typical workflow is:
   \item \code{\link{ws_prior}}, \code{\link{ws_predictive}} with
     \code{type = "prior"}: prior and prior predictive check.
   \item \code{\link{bergm_w}} or \code{\link{bergm_ws}}: adaptive exchange sampler, then
-    \code{\link{summary.bergm_w}} and \code{\link{plot.bergm_w}} for estimates
-    and convergence diagnostics.
+    \code{\link{summary.bergm_w}} for estimates and convergence diagnostics,
+    \code{as.mcmc.list()} for the draws.
   \item \code{\link{ws_predictive}}: posterior predictive check, including
     statistics not used in the model; \code{\link{ws_aux_check}}: are the
     auxiliary chains long enough?

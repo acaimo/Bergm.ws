@@ -25,7 +25,7 @@ ws_data(weights, thresholds, signs = NULL, attributes = NULL)
   \item{thresholds}{strictly increasing vector of length \eqn{K + 1}; the
     first defines the baseline layer \eqn{x_0}.}
   \item{attributes}{optional data frame of node attributes, one row per node,
-    available to the terms of the model formula and to plots.}
+    available to the terms of the model formula.}
   \item{x}{an \code{ws_data} object.}
   \item{...}{ignored.}
 }
@@ -36,7 +36,7 @@ An object of class \code{"ws_data"}: a list with the multilayer network
 layer containing it, or -1), the sign matrix \code{signs}, the support
 \code{constraint} formula and the inputs.
 }
-\seealso{\code{\link{ws_model}}, \code{\link{plot.ws_data}}}
+\seealso{\code{\link{ws_model}}}
 \examples{
 data(toy_ws)
 

@@ -6,22 +6,16 @@ export(bergm_w)
 export(bergm_ws)
 export(ws_predictive)
 export(ws_aux_check)
-export(ws_layout)
-export(plot_layers)
-export(plot_adjacency)
 
 S3method(print, ws_data)
-S3method(plot, ws_data)
 S3method(print, ws_model)
 S3method(print, ws_prior)
 S3method(print, bergm_w)
 S3method(summary, bergm_w)
 S3method(print, summary.bergm_w)
-S3method(plot, bergm_w)
 S3method(coef, bergm_w)
 S3method(as.mcmc.list, bergm_w)
 S3method(print, ws_predictive)
-S3method(plot, ws_predictive)
 S3method(print, ws_aux_check)
 
 importFrom(ergm, ergmMPLE, ergm_MCMC_sample, control.simulate.formula)
@@ -30,11 +24,5 @@ importFrom(network, network, network.size, network.edgecount, as.network,
            set.vertex.attribute, get.vertex.attribute, network.vertex.names)
 importFrom(coda, mcmc, mcmc.list, as.mcmc.list, gelman.diag, effectiveSize)
 importFrom(stats, simulate, cov, sd, var, quantile, rnorm, runif, rWishart,
-           as.formula, setNames, cmdscale, hclust, as.dist, median, coef,
-           plogis, rbinom)
-importFrom(graphics, plot, plot.new, plot.window, lines, points, text, segments,
-           rect, polygon, axis, mtext, abline, par, layout, legend, image,
-           title, box, strwidth, strheight, hist, grconvertX)
-importFrom(grDevices, adjustcolor, colorRampPalette)
-importFrom(utils, head)
+           as.formula, setNames, median, coef, plogis, rbinom)
 importFrom(parallel, mclapply)

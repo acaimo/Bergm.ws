@@ -143,7 +143,7 @@ acceptance indicators, final proposal scales and covariances), the settings and
 the initialisation (starting value, initial proposal covariance and a fit
 check of the starting value).
 }
-\seealso{\code{\link{summary.bergm_w}}, \code{\link{plot.bergm_w}},
+\seealso{\code{\link{summary.bergm_w}},
 \code{\link{ws_predictive}}, \code{\link{ws_aux_check}}}
 \examples{
 data(toy_ws)

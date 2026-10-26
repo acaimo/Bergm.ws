@@ -38,10 +38,7 @@ data(toy_ws)
 
 ## signed weighted network
 dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-plot(dat, color_by = "module")
-plot(dat, layout = "circle", color_by = "module")
-plot_layers(dat, color_by = "module")
-plot_adjacency(dat)
+dat                                        # layers, edges, signs, triangles
 
 f <- ~ L(~edges, ~(z & x_k)) + L(~nodematch("pathway"), ~(z & x_k)) + L(~edges, ~(!z & x_k)) +
   gwespL(0.5, fixed = TRUE, L.base = ~(z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k))) +
@@ -49,12 +46,12 @@ f <- ~ L(~edges, ~(z & x_k)) + L(~nodematch("pathway"), ~(z & x_k)) + L(~edges, 
 mod <- ws_model(dat, f, scale = "gwesp")   # check the formula, see the statistics
 mod
 fit <- bergm_ws(mod, n_iter = 10000, burnin = 2500, thin = 2, n_chains = 4, cores = 2)
-summary(fit)
-plot(fit, type = "intervals")
-plot(fit)
+summary(fit)                               # estimates, Rhat, ESS
+coef(fit)                                  # posterior means by layer
+draws <- as.mcmc.list(fit)                 # draws as a coda object
 
 pp <- ws_predictive(fit, nsim = 200)
-plot(pp, what = "gof")
+pp                                         # observed vs simulated statistics, mid-p
 ws_aux_check(fit)
 
 ## the same weights without signs
@@ -149,31 +146,13 @@ Prior and posterior predictive simulation, compared with the observed network
 on the model statistics and on statistics that are **not** in the model, in
 every layer: signed triangle counts (`+++`, `-++`, `+--`, `---`) and the spread
 of the positive degrees for signed networks; triangles, spread and maximum of
-the degrees otherwise. `plot()` shows each statistic standardised by its
-simulated distribution, so that all of them fit on one axis, with mid-p values.
+the degrees otherwise. `print()` gives the observed value, the mean and the
+central 95% of the simulated values and the mid-p value of every statistic;
+the simulated statistics are returned for further analysis.
 
-**Visualisation**
-
-* `plot(dat)`: positive edges in blue, negative edges in red (dashed), with the
-  weight level encoded by width and opacity; stress layout in which strong
-  positive edges are short and negative edges are long, or a circular layout
-  grouped by a node attribute (`layout = "circle"`).
-* `plot_layers()`: the nested layers side by side on the same layout.
-* `plot_adjacency()`: the signed adjacency matrix by weight level, ordered so
-  that modules appear as blocks.
-* `plot(fit, type = "intervals")`: posterior intervals of every effect in every
-  layer next to the hierarchical mean; `plot(fit)`: traces or densities.
-
-## Gallery (simulated toy network)
-
-![network](man/figures/network.png)
-![circular layout](man/figures/network_circle.png)
-![network without signs](man/figures/network_unsigned.png)
-![layers](man/figures/layers.png)
-![adjacency](man/figures/adjacency.png)
-![posterior intervals](man/figures/intervals.png)
-![traces](man/figures/traces.png)
-![posterior predictive, statistics not in the model](man/figures/post_pred_gof.png)
+The package has no plotting functions: draws are available as `coda` objects
+(`as.mcmc.list(fit)`) and the layers as `network` objects (`dat$x`), so any
+plotting tool can be used.
 
 ## The model in one formula
 

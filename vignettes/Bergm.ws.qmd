@@ -14,8 +14,6 @@ vignette: >
 knitr:
   opts_chunk:
     comment: ""
-    fig.align: center
-    dpi: 110
 ---
 
 ```{r}
@@ -93,14 +91,6 @@ y <- ws_data(w, t_k, z); y
 The share of positive edges grows with the weight, as it often does in real
 co-expression networks: strong interactions are mostly positive.
 
-```{r}
-#| label: network
-#| fig-width: 8
-#| fig-height: 7.5
-xy <- ws_layout(y)
-plot(y, layout = xy)
-```
-
 ## 3. Weighted signed networks: `bergm_ws()`
 
 ### Model specification
@@ -164,19 +154,18 @@ These are the default values: $\mu \sim \mathcal{N}(0, 3I)$ and
 $\Sigma \sim \mathrm{IW}(p + 9, I)$, so that the expected between-layer standard
 deviation is about 0.35. With few layers $\Sigma$ is informed mostly by the
 prior, which acts as a moderate shrinkage of the layers towards each other. A
-prior predictive check shows the networks the prior considers plausible:
+prior predictive check compares the observed statistics with those of networks
+simulated from the prior:
 
 ```{r}
 #| label: prior-pred
-#| fig-width: 7.5
-#| fig-height: 7
 y_prior <- ws_predictive(model, 
                          prior = prior, 
                          type = "prior", 
                          nsim = 100,
                          seed = 1, 
                          verbose = FALSE)
-plot(y_prior)
+y_prior
 ```
 
 ```{r}
@@ -248,16 +237,6 @@ round(phi, 2)
 round(mu, 2)
 ```
 
-The interval plot shows every effect in every layer next to the hierarchical
-mean:
-
-```{r}
-#| label: intervals
-#| fig-width: 8
-#| fig-height: 5.5
-plot(post, type = "intervals")
-```
-
 Positive edges are more likely than negative ones to survive into the next
 layer in every layer. The degree effect of the positive edges is negative
 (posterior means `r sprintf("%.2f", phi[1, 2])`, `r sprintf("%.2f", phi[2, 2])`
@@ -266,14 +245,9 @@ survive concentrate on nodes with many positive edges, which in this network
 are the cores of the modules. The effect weakens as the threshold rises, and
 the hierarchical prior pulls the three layers towards the common mean.
 
-```{r}
-#| label: traces
-#| fig-width: 10
-#| fig-height: 6.5
-plot(post, max_points = 500)
-```
-
-The four chains overlap after the burn-in.
+The draws are available as a **coda** object, `as.mcmc.list(post)` (and
+`as.mcmc.list(post, "mu")`, `as.mcmc.list(post, "sd")`), for any further
+diagnostic or display.
 
 ### Posterior predictive checks
 
@@ -283,12 +257,9 @@ signed triangles and the spread of the positive degrees in every layer.
 
 ```{r}
 #| label: post-pred
-#| fig-width: 7.5
-#| fig-height: 7.5
 y_rep <- ws_predictive(post, nsim = 200, seed = 2, verbose = FALSE)
-plot(y_rep, what = "model")
-plot(y_rep, what = "gof")
-``` 
+y_rep
+```
 
 The model describes how many positive and negative edges survive
 and how they are spread over the nodes, but contains no term for triangles, so
@@ -327,13 +298,6 @@ x
 ```
 
 ```{r}
-#| label: network-x
-#| fig-width: 8
-#| fig-height: 7.5
-plot(x)
-```
-
-```{r}
 #| label: model-x
 s_x <- ~ L(~edges, ~x_k) + 
          L(~nodematch("pathway"), ~x_k) +
@@ -364,13 +328,6 @@ post_x <- bergm_w(x,
 summary(post_x)
 ```
 
-```{r}
-#| label: intervals-x
-#| fig-width: 8
-#| fig-height: 5
-plot(post_x, type = "intervals")
-```
-
 The transitivity effect is positive in every layer: an edge with many shared
 partners is more likely to have a large weight. Without signs, the statistics
 outside the model are the number of triangles and the standard deviation and
@@ -378,14 +335,12 @@ maximum of the degrees in every layer.
 
 ```{r}
 #| label: post-pred-x
-#| fig-width: 7.5
-#| fig-height: 6
 x_rep <- ws_predictive(post_x, 
                        nsim = 200, 
                        seed = 8, 
                        verbose = FALSE)
 
-plot(x_rep, what = "gof")
+x_rep
 ```
 
 ```{r}

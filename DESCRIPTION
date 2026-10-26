@@ -24,14 +24,14 @@ Description: Bayesian hierarchical multi-layer dissolution exponential random
     during the burn-in and pooled across chains. The package also provides a
     model builder that checks that every statistic is computed on its own
     layer, prior and posterior predictive checks with goodness-of-fit
-    statistics not used in the model, convergence diagnostics, a check of the
-    length of the auxiliary chains, and network visualisations.
+    statistics not used in the model, convergence diagnostics and a check of
+    the length of the auxiliary chains.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 4.1.0)
 Imports: ergm (>= 4.6.0), ergm.multi (>= 0.2.0), network, coda, stats,
-        graphics, grDevices, utils, parallel
+        parallel
 Suggests: knitr, quarto
 VignetteBuilder: quarto
 NeedsCompilation: no

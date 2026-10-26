@@ -101,7 +101,7 @@ print.bergm_w <- function(x, ...) {
   print(round(coef(x), 3))
   cat("max Rhat", .fmt(max(c(s$phi$Rhat, s$mu$Rhat), na.rm = TRUE), 3),
       "| min ESS", round(min(c(s$phi$ESS, s$mu$ESS))), "\n")
-  cat("Use summary() for intervals and diagnostics, plot() for traces.\n")
+  cat("Use summary() for intervals and diagnostics, as.mcmc.list() for the draws.\n")
   invisible(x)
 }
 
@@ -118,107 +118,4 @@ coef.bergm_w <- function(object, what = c("phi", "mu"), scale = c("model", "ergm
   if (scale == "ergm") v <- v * m$scale
   matrix(v, m$K, m$p, byrow = TRUE,
          dimnames = list(paste0("layer ", seq_len(m$K)), m$terms))
-}
-
-.plot_intervals <- function(x, main = NULL) {
-  pal <- .ws_pal
-  m <- x$model
-  K <- m$K; p <- m$p
-  phi <- do.call(rbind, lapply(x$chains, `[[`, "phi"))
-  mu <- do.call(rbind, lapply(x$chains, `[[`, "mu"))
-  qs <- function(v) quantile(v, c(0.025, 0.25, 0.5, 0.75, 0.975), names = FALSE)
-  lay_col <- colorRampPalette(c("#6da7ec", "#2a78d6", "#0d366b"), space = "Lab")(max(K, 2))
-  if (K == 1) lay_col <- "#2a78d6"
-  cols <- c(lay_col[seq_len(K)], pal$ink)
-  nsub <- K + 1
-  rows <- list()
-  for (j in seq_len(p)) {
-    for (k in seq_len(K)) rows[[length(rows) + 1]] <- list(j = j, s = k, q = qs(phi[, (k - 1) * p + j]))
-    rows[[length(rows) + 1]] <- list(j = j, s = nsub, q = qs(mu[, j]))
-  }
-  y <- vapply(rows, function(r) -((r$j - 1) * (nsub + 1.2) + r$s), numeric(1))
-  xr <- range(unlist(lapply(rows, `[[`, "q")), 0)
-  xr <- xr + c(-1, 1) * 0.04 * diff(xr)
-  op <- par(no.readonly = TRUE)
-  on.exit(par(op))
-  .ws_par(mar = c(5.2, 10, 3.6, 1.2))
-  plot.new()
-  plot.window(xlim = xr, ylim = c(min(y) - 0.6, max(y) + 0.6))
-  abline(v = pretty(xr), col = pal$grid, lwd = 0.7)
-  abline(v = 0, col = pal$axis, lwd = 1.1)
-  for (i in seq_along(rows)) {
-    r <- rows[[i]]
-    segments(r$q[1], y[i], r$q[5], y[i], col = cols[r$s], lwd = 1.1, lend = 1)
-    segments(r$q[2], y[i], r$q[4], y[i], col = cols[r$s], lwd = 4.2, lend = 1)
-    points(r$q[3], y[i], pch = if (r$s == nsub) 23 else 21, bg = cols[r$s],
-           col = pal$surface, cex = if (r$s == nsub) 1.25 else 1.05, lwd = 1.3)
-  }
-  axis(1, at = pretty(xr), lwd = 0, lwd.ticks = 0.6, cex.axis = 0.75)
-  centre <- vapply(seq_len(p), function(j) mean(y[vapply(rows, `[[`, 0, "j") == j]), numeric(1))
-  mtext(m$terms, side = 2, at = centre, line = 0.6, las = 1, cex = 0.8, col = pal$ink2)
-  if (is.null(main)) main <- "Posterior medians, 50% and 95% intervals"
-  par(xpd = NA)
-  usr <- par("usr")
-  left <- grconvertX(0.02, "ndc", "user")
-  mtext(main, side = 3, line = 2, adj = 0, at = left, cex = 1.05, col = pal$ink)
-  mtext(paste0("layer-specific parameters and hierarchical mean",
-               if (!is.null(.scale_note(m))) paste0("  |  ", .scale_note(m)) else ""),
-        side = 3, line = 0.8, adj = 0, at = left, cex = 0.7, col = pal$ink2)
-  ents <- c(lapply(seq_len(K), function(k)
-    list(type = "point", label = paste0("layer ", k, " (x", k - 1, " to x", k, ")"),
-         pch = 21, bg = cols[k], pt.cex = 1.1)),
-    list(list(type = "point", label = "hierarchical mean", pch = 23, bg = pal$ink, pt.cex = 1.2)))
-  .legend_groups(list(list(title = "", entries = ents)), left,
-                 usr[3] - 0.12 * diff(usr[3:4]), cex = 0.72)
-  invisible(x)
-}
-
-plot.bergm_w <- function(x, what = c("phi", "mu", "sd"), type = c("trace", "density", "intervals"),
-                         params = NULL, max_points = 2500, ...) {
-  what <- match.arg(what)
-  type <- match.arg(type)
-  if (type == "intervals") return(.plot_intervals(x, ...))
-  ml <- as.mcmc.list(x, what)
-  labs <- colnames(ml[[1]])
-  if (!is.null(params)) labs <- intersect(labs, params)
-  if (!length(labs)) stop("no parameters to plot.", call. = FALSE)
-  m <- x$model
-  nc <- if (what == "phi" && is.null(params)) m$p else min(length(labs), 4L)
-  nr <- ceiling(length(labs) / nc)
-  op <- par(no.readonly = TRUE)
-  on.exit(par(op))
-  .ws_par(mfrow = c(nr, nc), mar = c(2.2, 3.2, 2, 0.6), oma = c(2.2, 0, 2.4, 0))
-  cols <- .ws_pal$chains[(seq_along(ml) - 1L) %% length(.ws_pal$chains) + 1L]
-  for (lab in labs) {
-    vals <- lapply(ml, function(ch) as.numeric(ch[, lab]))
-    if (type == "trace") {
-      it <- as.numeric(stats::time(ml[[1]]))
-      show <- if (length(it) > max_points) unique(round(seq(1, length(it), length.out = max_points))) else seq_along(it)
-      plot(range(it), range(unlist(vals)), type = "n", xlab = "", ylab = "",
-           axes = FALSE)
-      abline(h = pretty(unlist(vals), 4), col = .ws_pal$grid, lwd = 0.6)
-      for (c in seq_along(vals))
-        lines(it[show], vals[[c]][show], col = adjustcolor(cols[c], 0.75), lwd = 0.6)
-    } else {
-      dens <- lapply(vals, stats::density)
-      plot(range(sapply(dens, function(d) range(d$x))), c(0, max(sapply(dens, function(d) max(d$y)))),
-           type = "n", xlab = "", ylab = "", axes = FALSE)
-      abline(h = 0, col = .ws_pal$axis, lwd = 0.8)
-      for (c in seq_along(dens)) lines(dens[[c]], col = cols[c], lwd = 1.4)
-    }
-    axis(1, col = .ws_pal$axis, lwd = 0, lwd.ticks = 0.6, cex.axis = 0.75)
-    axis(2, col = .ws_pal$axis, lwd = 0, lwd.ticks = 0.6, cex.axis = 0.75)
-    title(main = lab, cex.main = 0.85, adj = 0, line = 0.5)
-  }
-  mtext(if (type == "trace") "iteration" else "value", side = 1, outer = TRUE,
-        line = 0.8, cex = 0.8, col = .ws_pal$ink2)
-  mtext(paste0(if (type == "trace") "Traces" else "Posterior densities", " of ",
-               switch(what, phi = "the layer-specific parameters", mu = "the hierarchical means",
-                      sd = "the between-layer standard deviations")),
-        side = 3, outer = TRUE, line = 0.9, adj = 0.01, cex = 0.85, col = .ws_pal$ink)
-  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-  plot.new()
-  legend("topright", legend = paste("chain", seq_along(ml)), col = cols, lwd = 2,
-         horiz = TRUE, bty = "n", cex = 0.75, text.col = .ws_pal$ink2, inset = c(0.01, 0.005))
-  invisible(x)
 }

@@ -15,12 +15,9 @@
   start with moment-matching Newton steps, delayed acceptance, hierarchical
   mean integrated out of the exchange step, proposal covariance learned during
   the burn-in, pooled across chains and frozen, chains in parallel.
-* Summaries with Rhat and effective sample sizes; trace, density and interval
-  plots.
+* Summaries with Rhat and effective sample sizes; draws as `coda` objects.
 * Prior and posterior predictive checks with statistics not in the model, and
   a check of the length of the auxiliary chains.
-* Network plots: stress and circular layouts, layers side by side, adjacency
-  matrix by weight level.
 * One Quarto vignette (`Bergm.ws.qmd`): model and notation, signed networks
   with `bergm_ws()`, networks without signs with `bergm_w()`, and the adaptive
   exchange algorithm; the code uses the names of the notation.
@@ -28,3 +25,5 @@
   `bergm_ws()`), layer by layer or as a template with `x_k`; they are checked
   layer by layer, statistics get short labels, and `scale = "gwesp"` rescales
   GWESP statistics.
+* No plotting functions: results are returned as tables, `coda` objects and
+  `network` objects for use with any plotting tool.

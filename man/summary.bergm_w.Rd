@@ -45,4 +45,4 @@ different layers suggests \code{update = "joint"}.
 \code{coef} a \eqn{K \times p} matrix (or a vector for \code{what = "mu"});
 \code{as.mcmc.list} a \code{coda} \code{mcmc.list}.
 }
-\seealso{\code{\link{bergm_w}}, \code{\link{plot.bergm_w}}}
+\seealso{\code{\link{bergm_w}}}

@@ -36,17 +36,6 @@ P2 <- P; P2[2, 3] <- P2[3, 2] <- 0; N2 <- N; N2[2, 3] <- N2[3, 2] <- 1
 g2 <- Bergm.ws:::.gof_layer(P2, N2)
 stopifnot(g2[["triangles +++"]] == 0, g2[["triangles -++"]] == 2)
 
-xy <- ws_layout(dat)
-stopifnot(all(dim(xy) == c(24, 2)), attr(xy, "type") == "stress", all(is.finite(xy)))
-xc <- ws_layout(dat, type = "circle", by = "module")
-stopifnot(isTRUE(all.equal(unname(rowSums(xc^2)), rep(1, 24))))
-pdf(NULL)
-plot(dat, layout = xc, color_by = "module")
-plot(dat, color_by = "pathway", labels = "all")
-plot_layers(dat, layout = "circle", color_by = "module")
-plot_adjacency(dat, order = "attribute", by = "module")
-dev.off()
-
 set.seed(1)
 fit <- bergm_ws(mod, n_iter = 120, burnin = 80, n_chains = 2, aux_iters = 500,
                n_info = 40, verbose = FALSE)
@@ -57,7 +46,6 @@ stopifnot(nrow(fit$chains[[1]]$accept) == 120, nrow(fit$chains[[1]]$phi) == 40)
 s <- summary(fit)
 stopifnot(nrow(s$phi) == 9, nrow(s$mu) == 3, all(is.finite(s$phi$mean)))
 stopifnot(all(dim(coef(fit)) == c(3, 3)))
-pdf(NULL); plot(fit); plot(fit, type = "intervals"); dev.off()
 
 fitL <- bergm_ws(mod, update = "layer", n_iter = 30, burnin = 10, n_chains = 1,
                  aux_iters = 500, n_info = 40, collapse_mu = FALSE, delayed = FALSE,
@@ -95,7 +83,6 @@ fitd <- suppressWarnings(bergm_w(dat, ~ L(~edges, ~x_k), n_iter = 30, burnin = 1
 stopifnot(!fitd$model$signed)
 pu <- ws_predictive(fitu, nsim = 5, burnin = 500, verbose = FALSE)
 stopifnot(ncol(pu$gof) == 9)
-pdf(NULL); plot(datu, color_by = "module"); plot_adjacency(datu); plot(pu, what = "gof"); dev.off()
 f <- ~ L(~edges, ~(z & x_1)) + L(~triangle, ~(z & x_1)) +
        L(~edges, ~(z & x_2)) + L(~triangle, ~(z & x_2)) +
        L(~edges, ~(z & x_3)) + L(~triangle, ~(z & x_3))

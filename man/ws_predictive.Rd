@@ -1,7 +1,6 @@
 \name{ws_predictive}
 \alias{ws_predictive}
 \alias{print.ws_predictive}
-\alias{plot.ws_predictive}
 \title{Prior and posterior predictive checks}
 \description{
 Simulates networks from the prior or from the posterior and compares them with
@@ -16,9 +15,6 @@ ws_predictive(object, type = c("posterior", "prior"), prior = NULL,
                verbose = TRUE)
 
 \method{print}{ws_predictive}(x, digits = 2, ...)
-
-\method{plot}{ws_predictive}(x, what = c("model", "gof"),
-     style = c("intervals", "panels"), main = NULL, ...)
 }
 \arguments{
   \item{object}{an \code{\link{bergm_w}} (posterior or prior check) or an
@@ -35,12 +31,6 @@ ws_predictive(object, type = c("posterior", "prior"), prior = NULL,
   \item{verbose}{print progress.}
   \item{x}{an \code{ws_predictive} object.}
   \item{digits}{digits for printing.}
-  \item{what}{\code{"model"} or \code{"gof"} statistics.}
-  \item{style}{\code{"intervals"}: every statistic standardised by the mean
-    and standard deviation of its simulated values, with the central 50\% and
-    95\% of the simulated values and the observed value, on one axis;
-    \code{"panels"}: one histogram per statistic.}
-  \item{main}{plot title.}
   \item{...}{ignored.}
 }
 \details{
@@ -66,9 +56,7 @@ f <- ~ L(~edges, ~(z & x_k)) +
 
 mod <- ws_model(y, f)
 \donttest{
-p <- ws_predictive(mod, type = "prior", nsim = 50, seed = 1)
+pp <- ws_predictive(mod, type = "prior", nsim = 50, seed = 1)
 pp
-
-plot(pp)
 }
 }
