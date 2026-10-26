@@ -39,7 +39,10 @@ layer containing it, or -1), the sign matrix \code{signs}, the support
 \seealso{\code{\link{ws_model}}, \code{\link{plot.ws_data}}}
 \examples{
 data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-dat
-ws_data(toy_ws$weights, toy_ws$thresholds)
+
+y <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
+y
+
+x <- ws_data(toy_ws$weights, toy_ws$thresholds)
+x
 }

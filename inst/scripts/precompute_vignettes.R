@@ -26,7 +26,7 @@ rows <- list()
 for (seed in c(11, 12)) for (nm in names(configs)) {
   post <- do.call(bergm_ws, c(list(model, 
                                    prior = prior, 
-                                   n_iter = 10000, 
+                                   n_iter = 5000, 
                                    burnin = 1000, 
                                    n_chains = 4,
                                    cores = cores, 

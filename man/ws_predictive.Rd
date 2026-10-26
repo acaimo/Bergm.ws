@@ -58,12 +58,17 @@ parameter draws used.
 \seealso{\code{\link{bergm_w}}}
 \examples{
 data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-f <- ~ L(~edges, ~(z & x_k)) + L(~nodematch("pathway"), ~(z & x_k)) + L(~edges, ~(!z & x_k))
-mod <- ws_model(dat, f)
+
+y <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
+
+f <- ~ L(~edges, ~(z & x_k)) + 
+       L(~nodematch("pathway"), ~(z & x_k)) + L(~edges, ~(!z & x_k))
+
+mod <- ws_model(y, f)
 \donttest{
-pp <- ws_predictive(mod, type = "prior", nsim = 50, seed = 1)
+p <- ws_predictive(mod, type = "prior", nsim = 50, seed = 1)
 pp
+
 plot(pp)
 }
 }

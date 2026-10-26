@@ -34,7 +34,10 @@ and \code{S0}.
 \value{An object of class \code{"ws_prior"}.}
 \examples{
 data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-mod <- ws_model(dat, ~ L(~edges, ~(z & x_k)) + L(~edges, ~(!z & x_k)))
-ws_prior(mod)
+
+y <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
+
+m <- ws_model(y, ~ L(~edges, ~(z & x_k)) + L(~edges, ~(!z & x_k)))
+
+ws_prior(m)
 }

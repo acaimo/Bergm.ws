@@ -147,16 +147,37 @@ check of the starting value).
 \code{\link{ws_predictive}}, \code{\link{ws_aux_check}}}
 \examples{
 data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-datu <- ws_data(toy_ws$weights, toy_ws$thresholds)
+y <- ws_data(toy_ws$weights, 
+             toy_ws$thresholds, 
+             toy_ws$signs, 
+             toy_ws$attributes)
+             
+x <- ws_data(toy_ws$weights, 
+             toy_ws$thresholds)
+
 \donttest{
-fs <- ~ L(~edges, ~(z & x_k)) + L(~edges, ~(!z & x_k)) +
-  gwespL(0.5, fixed = TRUE, L.base = ~(z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k)))
-fit <- bergm_ws(dat, fs, scale = "gwesp", n_iter = 300, burnin = 100,
-                n_chains = 2, seed = 1)
-summary(fit)
-fitu <- bergm_w(datu, ~ L(~edges, ~x_k) + L(~triangle, ~x_k),
-                n_iter = 300, burnin = 100, n_chains = 2, seed = 1)
-summary(fitu)
+f <- ~ L(~edges, ~(z & x_k)) + 
+       L(~edges, ~(!z & x_k)) +
+       gwespL(0.5, 
+              fixed = TRUE, 
+              L.base = ~(z & x_k), 
+              Ls.path = list(~(z & x_k), ~(z & x_k)))
+
+fit_ws <- bergm_ws(y, 
+                   f, 
+                   scale = "gwesp", 
+                   n_iter = 300, 
+                   burnin = 100,
+                   n_chains = 2, 
+                   seed = 1)
+summary(fit_ws)
+
+fit_w <- bergm_w(x, 
+                 ~ L(~edges, ~x_k) + L(~triangle, ~x_k),
+                 n_iter = 300, 
+                 burnin = 100, 
+                 n_chains = 2, 
+                 seed = 1)
+summary(fit_w)
 }
 }

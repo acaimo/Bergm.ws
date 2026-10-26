@@ -55,8 +55,10 @@ attribute \code{"type"} (\code{ws_layout}).}
 \seealso{\code{\link{plot_layers}}, \code{\link{plot_adjacency}}}
 \examples{
 data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
-xy <- ws_layout(dat)
-plot(dat, layout = xy, color_by = "module")
-plot(dat, layout = "circle", color_by = "module")
+
+y <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
+
+xy <- ws_layout(y)
+
+plot(y, layout = xy)
 }

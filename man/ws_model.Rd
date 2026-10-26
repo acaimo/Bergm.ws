@@ -68,25 +68,4 @@ the multipliers \code{scale} and the change-statistic correlations
 \code{change_cor}.
 }
 \seealso{\code{\link{ws_prior}}, \code{\link{bergm_w}}}
-\examples{
-data(toy_ws)
-dat <- ws_data(toy_ws$weights, toy_ws$thresholds, toy_ws$signs, toy_ws$attributes)
 
-f <- ~ L(~edges, ~(z & x_k)) + L(~edges, ~(!z & x_k)) +
-  gwespL(0.5, fixed = TRUE, L.base = ~(z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k)))
-
-mod <- ws_model(dat, f, scale = "gwesp")
-mod
-
-## the same model written layer by layer
-g <- ~ L(~edges, ~(z & x_1)) + L(~edges, ~(!z & x_1)) +
-  gwespL(0.5, fixed = TRUE, L.base = ~(z & x_1), Ls.path = list(~(z & x_1), ~(z & x_1))) +
-  L(~edges, ~(z & x_2)) + L(~edges, ~(!z & x_2)) +
-  gwespL(0.5, fixed = TRUE, L.base = ~(z & x_2), Ls.path = list(~(z & x_2), ~(z & x_2))) +
-  L(~edges, ~(z & x_3)) + L(~edges, ~(!z & x_3)) +
-  gwespL(0.5, fixed = TRUE, L.base = ~(z & x_3), Ls.path = list(~(z & x_3), ~(z & x_3)))
-ws_model(dat, g, scale = "gwesp")
-
-datu <- ws_data(toy_ws$weights, toy_ws$thresholds, attributes = toy_ws$attributes)
-ws_model(datu, ~ L(~edges, ~x_k) + L(~nodematch("module"), ~x_k) + L(~triangle, ~x_k))
-}

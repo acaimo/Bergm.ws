@@ -37,8 +37,7 @@ ready for \code{\link{ws_data}}.
 \seealso{\code{\link{toy_ws}}, \code{\link{ws_data}}}
 \examples{
 sim <- ws_simulate(n = 30, seed = 1)
-dat <- ws_data(sim$weights, sim$thresholds, sim$signs, sim$attributes)
-dat
-u <- ws_simulate(n = 30, signed = FALSE, seed = 1)
-ws_data(u$weights, u$thresholds, attributes = u$attributes)
+
+y <- ws_data(sim$weights, sim$thresholds, sim$signs, sim$attributes)
+y
 }
