@@ -43,11 +43,16 @@ dat                                        # layers, edges, signs, triangles
 f <- ~ L(~edges, ~(z & x_k)) + L(~nodematch("pathway"), ~(z & x_k)) + L(~edges, ~(!z & x_k)) +
   gwespL(0.5, fixed = TRUE, L.base = ~(z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k))) +
   gwespL(0.5, fixed = TRUE, L.base = ~(!z & x_k), Ls.path = list(~(z & x_k), ~(z & x_k)))
+
 mod <- ws_model(dat, f, scale = "gwesp")   # check the formula, see the statistics
 mod
+
 fit <- bergm_ws(mod, n_iter = 10000, burnin = 2500, thin = 2, n_chains = 4, cores = 2)
-summary(fit)                               # estimates, Rhat, ESS
+
+summary(fit)                     
+
 coef(fit)                                  # posterior means by layer
+
 draws <- as.mcmc.list(fit)                 # draws as a coda object
 
 pp <- ws_predictive(fit, nsim = 200)
@@ -55,10 +60,12 @@ pp                                         # observed vs simulated statistics, m
 ws_aux_check(fit)
 
 ## the same weights without signs
-datu <- ws_data(toy_ws$weights, toy_ws$thresholds, attributes = toy_ws$attributes)
-fitu <- bergm_w(datu, ~ L(~edges, ~x_k) + L(~triangle, ~x_k),
-                n_iter = 6000, burnin = 1500, n_chains = 4, cores = 2)
-summary(fitu)
+dat_2 <- ws_data(toy_ws$weights, toy_ws$thresholds, attributes = toy_ws$attributes)
+
+fit_2 <- bergm_w(dat_2, ~ L(~edges, ~x_k) + L(~triangle, ~x_k),
+                 n_iter = 6000, burnin = 1500, n_chains = 4, cores = 2)
+
+summary(fit_2)
 ```
 
 In signed data `(z & x_k)` selects the positive edges of layer k and
