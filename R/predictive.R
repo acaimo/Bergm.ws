@@ -7,6 +7,7 @@
   }))
 }
 
+#' @export
 ws_predictive <- function(object, type = c("posterior", "prior"), prior = NULL,
                            nsim = 200, burnin = NULL, gof = TRUE, seed = NULL,
                            verbose = TRUE) {
@@ -60,6 +61,7 @@ ws_predictive <- function(object, type = c("posterior", "prior"), prior = NULL,
              check.names = FALSE, row.names = colnames(S))
 }
 
+#' @export
 print.ws_predictive <- function(x, digits = 2, ...) {
   cat(if (x$type == "posterior") "Posterior" else "Prior",
       " predictive check: ", x$nsim, " simulated networks\n", sep = "")
@@ -79,6 +81,7 @@ print.ws_predictive <- function(x, digits = 2, ...) {
   invisible(x)
 }
 
+#' @export
 ws_aux_check <- function(fit, n = 100, factor = 20, seed = NULL) {
   if (!inherits(fit, "bergm_w")) stop("'fit' must come from bergm_w() or bergm_ws().", call. = FALSE)
   if (!is.null(seed)) set.seed(seed)
@@ -102,6 +105,7 @@ ws_aux_check <- function(fit, n = 100, factor = 20, seed = NULL) {
   out
 }
 
+#' @export
 print.ws_aux_check <- function(x, ...) {
   cat("Auxiliary chains of ", attr(x, "aux_iters"), " steps vs ", attr(x, "factor"),
       " times longer, at the posterior mean\n", sep = "")

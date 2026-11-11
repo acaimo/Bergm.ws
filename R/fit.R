@@ -349,7 +349,7 @@
   par_ok <- cores > 1 && n_chains > 1 && .Platform$OS.type != "windows"
   run_all <- function(FUN) {
     res <- if (par_ok) {
-      mclapply(seq_len(n_chains), function(i) tryCatch(FUN(i), error = function(e) e),
+      parallel::mclapply(seq_len(n_chains), function(i) tryCatch(FUN(i), error = function(e) e),
                mc.cores = min(cores, n_chains), mc.set.seed = FALSE)
     } else lapply(seq_len(n_chains), FUN)
     .stop_if_failed(res)
@@ -453,6 +453,7 @@
   fit
 }
 
+#' @export
 bergm_w <- function(data, formula = NULL, scale = NULL, labels = NULL, prior = NULL,
                     update = c("joint", "layer"), n_iter = 10000,
                     burnin = floor(n_iter / 4), thin = 1, n_chains = 4, cores = 1,
@@ -465,6 +466,7 @@ bergm_w <- function(data, formula = NULL, scale = NULL, labels = NULL, prior = N
   .run_bergm(model, prior, environment(), match.call())
 }
 
+#' @export
 bergm_ws <- function(data, formula = NULL, scale = NULL, labels = NULL, prior = NULL,
                      update = c("joint", "layer"), n_iter = 10000,
                      burnin = floor(n_iter / 4), thin = 1, n_chains = 4, cores = 1,

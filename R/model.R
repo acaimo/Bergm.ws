@@ -1,3 +1,11 @@
+#' @importFrom ergm.multi Layer uncombine_network
+#' @importFrom ergm control.simulate.formula ergmMPLE ergm_MCMC_sample
+#' @importFrom network as.network
+#' @importFrom coda as.mcmc.list mcmc mcmc.list gelman.diag effectiveSize
+#' @importFrom stats as.formula coef cov plogis quantile rWishart
+#' @importFrom stats rbinom rnorm runif sd setNames simulate var
+
+#' @export
 ws_model <- function(data, formula, scale = NULL, labels = NULL) {
   if (!inherits(data, "ws_data")) stop("'data' must be created with ws_data().", call. = FALSE)
   if (missing(formula) || !inherits(formula, "formula"))
@@ -162,6 +170,7 @@ ws_model <- function(data, formula, scale = NULL, labels = NULL) {
   switch(if (is.null(m$scale_type)) "none" else m$scale_type, gwesp = "GWESP statistics rescaled by exp(-decay)",
          user = "statistics multiplied by 'scale'", NULL)
 
+#' @export
 print.ws_model <- function(x, ...) {
   cat("Multi-layer dissolution ERGM for", if (x$signed) "signed" else "unsigned",
       "weighted networks\n")

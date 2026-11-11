@@ -1,5 +1,5 @@
 ---
-title: "**Bergm.ws**: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks"
+title: "Bergm.ws: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks"
 author: 
   - "Alberto Caimo"
   - "Isabella Gollini"
@@ -9,8 +9,8 @@ format:
     toc-depth: 2
 vignette: >
   %\VignetteIndexEntry{Bergm.ws: Bayesian multi-layer ERGMs for weighted and signed weighted networks}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{quarto::quarto}
+    %\VignetteEncoding{UTF-8}
 knitr:
   opts_chunk:
     comment: ""
@@ -519,7 +519,7 @@ modelling approach for weighted networks. *Computational Statistics & Data
 Analysis*, 142, 106825.
 
 Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution 
-exponential-family models for weighted signed networks. [arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420){.external target="_blank"}
+exponential-family models for weighted signed networks. [arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420)
 
 Christen, J. A. and Fox, C. (2005). Markov chain Monte Carlo using an
 approximation. *Journal of Computational and Graphical Statistics*, 14,

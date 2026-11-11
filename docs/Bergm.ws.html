@@ -123,7 +123,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><strong>Bergm.ws</strong>: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks</h1>
+<h1 class="title">Bergm.ws: Bayesian multi-layer dissolution ERGMs for weighted and signed weighted networks</h1>
 </div>
 
 
@@ -369,7 +369,7 @@ L3:sd(degree+)       1.26   0.85    0   2.05 0.710        </code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, signed weighted network
   adaptive exchange (joint update)
-  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 112 s
+  3 chains, 40,500 retained draws, 6620 auxiliary MCMC steps per exchange, 116 s
   acceptance after burn-in: 0.26, 0.26, 0.26 
   delayed acceptance: 45% of the proposals needed an auxiliary network
 
@@ -406,7 +406,7 @@ sd:edges- 0.343 0.088 0.221 0.327 0.559 1.000 2,182
 Convergence: max Rhat 1.017, min ESS 242, max |corr| between layers 0.42</code></pre>
 </div>
 </div>
-<p>The fit took 112 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
+<p>The fit took 116 seconds. The largest <span class="math inline">\(\hat R\)</span> is 1.017 and the smallest effective sample size 242, which is adequate for this example. Delayed acceptance needed an auxiliary network for only 45% of the proposals.</p>
 </section>
 <section id="results" class="level3">
 <h3 class="anchored" data-anchor-id="results">Results</h3>
@@ -552,7 +552,7 @@ layer 3    33                18  12.72</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Hierarchical multi-layer dissolution ERGM, unsigned weighted network
   adaptive exchange (joint update)
-  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 49 s
+  4 chains, 18,000 retained draws, 4280 auxiliary MCMC steps per exchange, 50 s
   acceptance after burn-in: 0.27, 0.26, 0.26, 0.27 
   delayed acceptance: 46% of the proposals needed an auxiliary network
   GWESP statistics rescaled by exp(-decay) 
@@ -788,7 +788,7 @@ I_K \otimes \Sigma + J_K \otimes \Sigma_0\big),
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <p>Caimo, A. and Friel, N. (2011). Bayesian inference for exponential random graph models. <em>Social Networks</em>, 33, 41–55.</p>
 <p>Caimo, A. and Gollini, I. (2020). A multi-layer exponential random graph modelling approach for weighted networks. <em>Computational Statistics &amp; Data Analysis</em>, 142, 106825.</p>
-<p>Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution exponential-family models for weighted signed networks. <a href="https://arxiv.org/abs/2511.03420" class="external" target="_blank">arxiv.org/abs/2511.03420</a></p>
+<p>Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution exponential-family models for weighted signed networks. <a href="https://arxiv.org/abs/2511.03420">arxiv.org/abs/2511.03420</a></p>
 <p>Christen, J. A. and Fox, C. (2005). Markov chain Monte Carlo using an approximation. <em>Journal of Computational and Graphical Statistics</em>, 14, 795–810.</p>
 <p>Haario, H., Saksman, E. and Tamminen, J. (2001). An adaptive Metropolis algorithm. <em>Bernoulli</em>, 7, 223–242.</p>
 <p>Krivitsky, P. N., Koehly, L. M. and Marcum, C. S. (2020). Exponential-family random graph models for multi-layer networks. <em>Psychometrika</em>, 85, 630–659.</p>

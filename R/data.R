@@ -1,3 +1,4 @@
+#' @export
 ws_simulate <- function(n = 40, K = 3, n_modules = 3, density = 0.30,
                         retention = c(0.55, 0.50, 0.50), signed = TRUE,
                         faction_share = 0.18, sign_noise = 0.08, seed = NULL) {
@@ -66,6 +67,7 @@ ws_simulate <- function(n = 40, K = 3, n_modules = 3, density = 0.30,
   g
 }
 
+#' @export
 ws_data <- function(weights, thresholds, signs = NULL, attributes = NULL) {
   .check_square_sym(weights, "weights")
   signed <- !is.null(signs)
@@ -177,6 +179,7 @@ ws_data <- function(weights, thresholds, signs = NULL, attributes = NULL) {
   do.call(rbind, rows)
 }
 
+#' @export
 print.ws_data <- function(x, ...) {
   cat(if (x$signed) "Signed" else "Unsigned", " weighted network: ", x$n, " nodes, K = ", x$K,
       " layer transitions (x_0 -> x_", x$K, ")\n", sep = "")

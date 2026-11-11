@@ -1,3 +1,4 @@
+#' @export
 as.mcmc.list.bergm_w <- function(x, what = c("phi", "mu", "sd"), ...) {
   what <- match.arg(what)
   m <- x$model
@@ -28,6 +29,7 @@ as.mcmc.list.bergm_w <- function(x, what = c("phi", "mu", "sd"), ...) {
   res
 }
 
+#' @export
 summary.bergm_w <- function(object, probs = c(0.025, 0.5, 0.975), ...) {
   m <- object$model
   K <- m$K; p <- m$p
@@ -63,6 +65,7 @@ summary.bergm_w <- function(object, probs = c(0.025, 0.5, 0.975), ...) {
   print(f, right = TRUE)
 }
 
+#' @export
 print.summary.bergm_w <- function(x, digits = 3, ...) {
   m <- x$model
   cat("Hierarchical multi-layer dissolution ERGM, ", if (m$signed) "signed" else "unsigned",
@@ -93,6 +96,7 @@ print.summary.bergm_w <- function(x, digits = 3, ...) {
   invisible(x)
 }
 
+#' @export
 print.bergm_w <- function(x, ...) {
   s <- summary(x)
   cat(if (x$model$signed) "bergm_ws" else "bergm_w", ": ", x$n_chains, " chains (", x$update, " update), ",
@@ -105,6 +109,7 @@ print.bergm_w <- function(x, ...) {
   invisible(x)
 }
 
+#' @export
 coef.bergm_w <- function(object, what = c("phi", "mu"), scale = c("model", "ergm"), ...) {
   what <- match.arg(what)
   scale <- match.arg(scale)

@@ -1,3 +1,4 @@
+#' @export
 ws_prior <- function(model, mu0 = 0, Sigma0 = 3, nu0 = NULL, S0 = 1) {
   p <- if (inherits(model, "ws_model")) model$p else as.integer(model)
   terms <- if (inherits(model, "ws_model")) model$terms else paste0("s", seq_len(p))
@@ -19,6 +20,7 @@ ws_prior <- function(model, mu0 = 0, Sigma0 = 3, nu0 = NULL, S0 = 1) {
   out
 }
 
+#' @export
 print.ws_prior <- function(x, ...) {
   cat("Hierarchical prior (p = ", x$p, " statistics per layer)\n", sep = "")
   cat("  mu ~ N(mu0, Sigma0), Sigma ~ inverse-Wishart(nu0 = ", x$nu0, ", S0)\n", sep = "")

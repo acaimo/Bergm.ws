@@ -64,7 +64,7 @@ Analysis*, 142, 106825.
 
 Caimo, A., Dalena, P, and Gollini, I. (2026). Multi-layer dissolution 
 exponential-family models for weighted signed networks. 
-[arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420){.external target="_blank"}
+[arxiv.org/abs/2511.03420](https://arxiv.org/abs/2511.03420)
 
 Murray, I., Ghahramani, Z. and MacKay, D. (2006). MCMC for doubly-intractable
 distributions. \emph{Proceedings of UAI}.

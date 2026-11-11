@@ -1,13 +1,10 @@
 Package: Bergm.ws
 Type: Package
-Title: Bayesian Multi-Layer ERGMs for Weighted and Signed Weighted
-        Networks
+Title: Bayesian Multi-Layer ERGMs for Weighted and Signed Weighted Networks
 Version: 0.1.0
 Authors@R: c(
-    person("Alberto", "Caimo", email = "alberto.caimo@gmail.com",
+    person("Alberto", "Caimo", email = "alberto.caimo1@ucd.ie",
            role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8956-7166")),
-    person("Paolo", "Dalena", role = "aut",
-           comment = c(ORCID = "0000-0003-2920-9572")),
     person("Isabella", "Gollini", role = "aut",
            comment = c(ORCID = "0000-0002-7738-5688")))
 Description: Bayesian hierarchical multi-layer dissolution exponential random
@@ -33,11 +30,7 @@ Depends: R (>= 4.1.0)
 Imports: ergm (>= 4.6.0), ergm.multi (>= 0.2.0), network, coda, stats,
         parallel
 Suggests: knitr, quarto
-VignetteBuilder: quarto
 NeedsCompilation: no
 Packaged: 2026-10-25 17:10:04 UTC; root
-Author: Alberto Caimo [aut, cre] (<https://orcid.org/0000-0001-8956-7166>),
-  Paolo Dalena [aut] (<https://orcid.org/0000-0003-2920-9572>),
-  Isabella Gollini [aut] (<https://orcid.org/0000-0002-7738-5688>)
-Maintainer: Alberto Caimo <alberto.caimo@gmail.com>
+Maintainer: Alberto Caimo <alberto.caimo1@ucd.ie>
 Config/roxygen2/version: 8.1.1
